@@ -7,8 +7,10 @@ export default {
 			colors: {
 				background: 'var(--background)',
 				foreground: 'var(--foreground)',
+				'input-background': 'var(--input-background)',
 				primary: 'var(--text-primary)',
 				secondary: 'var(--text-secondary)',
+				'spotify-green': 'var(--spotify-green)'
 			},
 		},
 	},

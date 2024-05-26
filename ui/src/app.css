@@ -5,8 +5,10 @@
 :root {
     --background: rgb(0, 0, 0);
     --foreground: rgb(18, 18, 18);
+    --input-background: rgb(36, 36, 36);
     --text-primary: rgb(255, 255, 255);
     --text-secondary: rgb(167, 167, 167);
+    --spotify-green: rgb(29, 185, 84);
 }
 
 @font-face {
