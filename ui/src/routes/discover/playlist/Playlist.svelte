@@ -1,18 +1,17 @@
 <script>
-	import Button from '$lib/components/Button.svelte';
 	import AddSongsModal from './AddSongsModal.svelte';
+	import Tile from '../Tile.svelte';
+	import PlaylistContextMenu from './contextMenu/PlaylistContextMenu.svelte';
 
-	let addingSong = false
-
-	function addSong() {
-		addingSong = true
-	}
+	let addingSong = false;
 </script>
 
-<div class="flex justify-between items-center font-circular-bold text-lg pb-3">
-	<div>Your Playlist</div>
-	<Button text="Add" onClick={addSong}/>
-</div>
+<Tile class="w-1/3">
+	<svelte:fragment slot="header">
+		<div>Playlist</div>
+		<PlaylistContextMenu />
+	</svelte:fragment>
+</Tile>
 {#if addingSong}
-	<AddSongsModal/>
+	<AddSongsModal />
 {/if}

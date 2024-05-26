@@ -5,11 +5,17 @@ export default {
 	theme: {
 		extend: {
 			colors: {
+				// background colors
 				background: 'var(--background)',
+				midground: 'var(--midground)',
 				foreground: 'var(--foreground)',
-				'input-background': 'var(--input-background)',
+				highlight: 'var(--highlight)',
+
+				// text colors
 				primary: 'var(--text-primary)',
 				secondary: 'var(--text-secondary)',
+
+				// misc colors
 				'spotify-green': 'var(--spotify-green)'
 			},
 		},

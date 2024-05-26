@@ -12,11 +12,10 @@
 </script>
 
 <div class="flex min-h-screen p-3 space-x-3">
-	<Tile class="w-1/3">
-		<Playlist/>
-	</Tile>
+	<Playlist />
 	<Tile class="w-2/3">
-		<h2 class="text-xl font-bold mb-4">Right Column</h2>
-		<p>This is the right column, occupying the remaining 75% of the screen width.</p>
+		<svelte:fragment slot="header">
+			Analysis
+		</svelte:fragment>
 	</Tile>
 </div>
