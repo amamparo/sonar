@@ -2,4 +2,6 @@
 	import '../app.css';
 </script>
 
-<slot />
+<div class="bg-background min-h-screen font-circular-medium">
+	<slot/>
+</div>

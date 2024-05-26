@@ -2,7 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --background: rgb(0, 0, 0);
+    --foreground: rgb(18, 18, 18);
+    --text-primary: rgb(255, 255, 255);
+    --text-secondary: rgb(167, 167, 167);
+}
+
+@font-face {
+    font-family: 'Circular Black';
+    src: url('/fonts/circular-black.ttf');
+}
+
+@font-face {
+    font-family: 'Circular Bold';
+    src: url('/fonts/circular-bold.ttf');
+}
+
+@font-face {
+    font-family: 'Circular Book';
+    src: url('/fonts/circular-book.ttf');
+}
+
+@font-face {
+    font-family: 'Circular Medium';
+    src: url('/fonts/circular-medium.ttf');
+}
+
 body {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    user-select: none;
+}
+
+.font-circular-medium {
+    font-family: 'Circular Medium', system-ui;
+}
+
+.font-circular-black {
+    font-family: 'Circular Black', system-ui;
+}
+
+.font-circular-book {
+    font-family: 'Circular Book', system-ui;
+}
+
+.font-circular-bold {
+    font-family: 'Circular Bold', system-ui;
 }
