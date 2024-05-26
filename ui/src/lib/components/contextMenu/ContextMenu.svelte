@@ -1,21 +1,28 @@
 <script lang="ts">
 	import Ellipsis from './Ellipsis.svelte';
 	import { onMount } from 'svelte';
-	import type ContextMenuItem from './ContextMenuItem.ts';
+	import ContextMenuItem from './ContextMenuItem.svelte';
 
-	export let items: ContextMenuItem[] = [];
+	export let items: object[] = [];
 
-	export let menuClass = ''
+	export let menuClass = '';
 
 	let showMenu = false;
 	let button;
 	let menu;
 
+	let showSubMenuForIndex = null;
+
 	const toggleMenu = () => showMenu = !showMenu;
+
+	const closeMenu = () => {
+		showMenu = false;
+		showSubMenuForIndex = null;
+	}
 
 	const handleClickOutside = event => {
 		if (menu && !menu.contains(event.target) && !button.contains(event.target)) {
-			showMenu = false;
+			closeMenu();
 		}
 	};
 
@@ -23,11 +30,6 @@
 		document.addEventListener('click', handleClickOutside);
 		return () => document.removeEventListener('click', handleClickOutside);
 	});
-
-	const wrap = action => () => {
-		showMenu = false;
-		action();
-	};
 </script>
 
 <div class="relative">
@@ -35,17 +37,21 @@
 		<Ellipsis />
 	</button>
 	{#if showMenu}
-		<div class="
-		menu bg-foreground absolute right-0 mt-2 shadow-2xl rounded-sm
-		font-circular-book text-primary text-sm font-extralight {menuClass}" bind:this={menu}>
+		<div class="absolute right-0 mt-2
+				bg-foreground shadow-2xl rounded
+				font-circular-book text-primary text-sm font-extralight
+				{menuClass}" bind:this={menu}>
 			<ul class="p-1">
-				{#each items as { icon, text, action }}
-					<li>
-						<button class="flex gap-3.5 w-full text-start items-center p-2.5 px-3 rounded-sm hover:bg-highlight"
-										on:click={wrap(action)}>
-							<svelte:component this={icon}/> <span>{text}</span>
-						</button>
-					</li>
+				{#each items as item, index}
+					<div class="relative">
+						<ContextMenuItem {...item} {index} closeParentMenu={closeMenu}
+														 bind:showSubMenuForIndex={showSubMenuForIndex}/>
+						{#if item.subMenu && index === showSubMenuForIndex}
+								<div class="absolute left-full top-0 ml-2 rounded shadow-xl bg-foreground">
+									<svelte:component this={item.subMenu} onComplete={closeMenu}/>
+								</div>
+						{/if}
+					</div>
 				{/each}
 			</ul>
 		</div>
