@@ -5,4 +5,11 @@ export type Track = {
 	album: string;
 	imageUrl: string;
 	previewUrl: string;
-}
+};
+
+export type Playlist = {
+	id: string;
+	title: string;
+	author: string;
+	imageUrl: string;
+};

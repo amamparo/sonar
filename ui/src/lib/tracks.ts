@@ -43,6 +43,17 @@ class TrackStore {
 		this.save();
 	}
 
+	public add(track: Track) {
+		if (this.state.tracks.some(t => t.id === track.id)) {
+			return;
+		}
+		this.store.update(state => {
+			state.tracks = [...state.tracks, track];
+			return state;
+		});
+		this.save();
+	}
+
 	public clear() {
 		this.setAll([]);
 	}

@@ -1,16 +1,9 @@
-import type { Track } from './models';
-
-export type PlaylistSearchResult = {
-	id: string;
-	title: string;
-	author: string;
-	imageUrl: string;
-}
+import type { Playlist, Track } from './models';
 
 class Api {
 	private static readonly SPOTIFY_TOKEN = 'spotify_token';
 
-	async searchPlaylists(query: string): Promise<PlaylistSearchResult[]> {
+	async searchPlaylists(query: string): Promise<Playlist[]> {
 		const response = await this.get(`/search/playlists/${query}`);
 		if (!response) {
 			return [];
@@ -25,6 +18,21 @@ class Api {
 
 	async playlistTracks(playlistId: string): Promise<Track[]> {
 		const response = await this.get(`/playlist/${playlistId}/tracks`);
+		if (!response) {
+			return [];
+		}
+		return response.map((item: object) => ({
+			id: item.id,
+			title: item.title,
+			artist: item.artist,
+			album: item.album,
+			previewUrl: item.preview_url,
+			imageUrl: item.image_url
+		}));
+	}
+
+	async searchTracks(query: string): Promise<Track[]> {
+		const response = await this.get(`/search/tracks/${query}`);
 		if (!response) {
 			return [];
 		}

@@ -5,8 +5,9 @@
 	import Spinner from '$lib/components/icon/Spinner.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import ImportPlaylistSubMenu from './contextMenu/ImportPlaylistSubMenu.svelte';
-	import TrashIcon from './contextMenu/icon/TrashIcon.svelte';
+	import TrashIcon from '$lib/components/icon/Trash.svelte';
 	import PlaylistTrack from './PlaylistTrack.svelte';
+	import AddSongsSubMenu from './contextMenu/addSongsSubMenu/AddSongsSubMenu.svelte';
 
 	let tracks = [];
 	let isUpdating = false;
@@ -27,7 +28,11 @@
 		<div>
 			Playlist
 			<span class="text-muted font-circular-medium font-extralight">
-				{tracks.length && !isUpdating ? ` (${tracks.length} tracks)` : ""}
+				{
+					tracks.length && !isUpdating ?
+						` (${tracks.length} track${tracks.length > 1 ? 's' : ''})` :
+						""
+				}
 			</span>
 		</div>
 		<PlaylistContextMenu bind:subMenuToShow={subMenuToShow} />
@@ -39,7 +44,7 @@
 			</div>
 		{:else if tracks.length === 0}
 			<div class="h-full flex items-center justify-center pb-20">
-				<Button onClick={() => {}}>Add Songs</Button>
+				<Button onClick={show(AddSongsSubMenu)}>Add Tracks</Button>
 				<span class="px-2">or</span>
 				<Button onClick={show(ImportPlaylistSubMenu)}>Import Playlist</Button>
 			</div>

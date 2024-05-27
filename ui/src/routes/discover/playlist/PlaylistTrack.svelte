@@ -1,6 +1,6 @@
 <script>
 	import { trackStore } from '$lib';
-	import TrashIcon from './contextMenu/icon/TrashIcon.svelte';
+	import TrashIcon from '$lib/components/icon/Trash.svelte';
 
 	export let imageUrl;
 	export let album;
@@ -30,7 +30,7 @@
 		<div class="text-sm text-secondary truncate">{artist}</div>
 	</div>
 	{#if isHovered}
-		<div class="w-10 h-10 p-3 fill-muted hover:fill-secondary hover:cursor-pointer"
+		<div class="w-10 h-10 p-3 fill-muted hover:fill-red-600 hover:cursor-pointer"
 				 on:click={deleteTrack}>
 			<TrashIcon />
 		</div>

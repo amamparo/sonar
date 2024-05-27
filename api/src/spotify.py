@@ -35,6 +35,22 @@ class Spotify:
             for x in playlists
         ]
 
+    def search_tracks(self, query: str) -> List[Track]:
+        tracks = (self.__get('/v1/search', {'q': query, 'type': 'track', 'limit': 50})
+                     .get('tracks', {})
+                     .get('items', []))
+        return [
+            Track(
+                id=x['id'],
+                title=x['name'],
+                artist=', '.join([a['name'] for a in x['artists']]),
+                album=x['album']['name'],
+                image_url=sorted(x['album']['images'], key=lambda i: i['height'])[0]['url'],
+                preview_url=x['preview_url']
+            )
+            for x in tracks
+        ]
+
     def playlist_tracks(self, playlist_id) -> List[Track]:
         initial_response = self.__get(f'/v1/playlists/{playlist_id}/tracks', {
             'limit': 100

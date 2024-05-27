@@ -2,9 +2,10 @@
 	import { ContextMenu, trackStore } from '$lib';
 	import AddSongsIcon from './icon/AddSongsIcon.svelte';
 	import ExportIcon from './icon/ExportIcon.svelte';
-	import TrashIcon from './icon/TrashIcon.svelte';
+	import TrashIcon from '$lib/components/icon/Trash.svelte';
 	import ImportIcon from './icon/ImportIcon.svelte';
 	import ImportPlaylistSubMenu from './ImportPlaylistSubMenu.svelte';
+	import AddSongsSubMenu from './addSongsSubMenu/AddSongsSubMenu.svelte';
 
 	export let subMenuToShow = null
 </script>
@@ -12,7 +13,8 @@
 <ContextMenu bind:subMenuToShow={subMenuToShow} menuClass={'w-44'} items={[
 		{
 			icon: AddSongsIcon,
-			text: 'Add Songs'
+			text: 'Add Tracks',
+			subMenu: AddSongsSubMenu
 		},
 		{
 			icon: ImportIcon,

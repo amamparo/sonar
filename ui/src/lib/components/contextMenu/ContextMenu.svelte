@@ -13,12 +13,19 @@
 
 	export let subMenuToShow = null;
 
-	const toggleMenu = () => showMenu = !showMenu;
+	const toggleMenu = () => {
+		showMenu = !showMenu;
+		if (subMenuToShow) {
+			subMenuToShow = null;
+		}
+	}
 
 	const closeMenu = () => {
 		showMenu = false;
 		subMenuToShow = null;
 	};
+
+	$: showMenu = showMenu || subMenuToShow !== null;
 
 	const handleClickOutside = event => {
 		if (menu && !menu.contains(event.target) && !button.contains(event.target)) {
@@ -36,7 +43,7 @@
 	<button class="ellipsis rounded-lg p-2" bind:this={button} on:click={toggleMenu}>
 		<Ellipsis />
 	</button>
-	{#if showMenu || subMenuToShow}
+	{#if showMenu}
 		<div class="absolute right-0 mt-2
 				bg-foreground shadow-2xl rounded
 				font-circular-book text-primary text-sm font-extralight
