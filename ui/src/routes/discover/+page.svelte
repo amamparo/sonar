@@ -11,7 +11,7 @@
 	});
 </script>
 
-<div class="flex min-h-screen max-h-screen p-3 space-x-3">
+<div class="flex min-h-screen max-h-screen p-4 space-x-3">
 	<Playlist />
 	<Tile class="w-2/3">
 		<svelte:fragment slot="header">
