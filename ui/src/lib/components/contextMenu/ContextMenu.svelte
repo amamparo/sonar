@@ -7,18 +7,18 @@
 
 	export let menuClass = '';
 
-	let showMenu = false;
+	export let showMenu = false;
 	let button;
 	let menu;
 
-	let showSubMenuForIndex = null;
+	export let subMenuToShow = null;
 
 	const toggleMenu = () => showMenu = !showMenu;
 
 	const closeMenu = () => {
 		showMenu = false;
-		showSubMenuForIndex = null;
-	}
+		subMenuToShow = null;
+	};
 
 	const handleClickOutside = event => {
 		if (menu && !menu.contains(event.target) && !button.contains(event.target)) {
@@ -27,8 +27,8 @@
 	};
 
 	onMount(() => {
-		document.addEventListener('click', handleClickOutside);
-		return () => document.removeEventListener('click', handleClickOutside);
+		document.addEventListener('pointerdown', handleClickOutside);
+		return () => document.removeEventListener('pointerdown', handleClickOutside);
 	});
 </script>
 
@@ -36,20 +36,20 @@
 	<button class="ellipsis rounded-lg p-2" bind:this={button} on:click={toggleMenu}>
 		<Ellipsis />
 	</button>
-	{#if showMenu}
+	{#if showMenu || subMenuToShow}
 		<div class="absolute right-0 mt-2
 				bg-foreground shadow-2xl rounded
 				font-circular-book text-primary text-sm font-extralight
 				{menuClass}" bind:this={menu}>
 			<ul class="p-1">
-				{#each items as item, index}
+				{#each items as item}
 					<div class="relative">
-						<ContextMenuItem {...item} {index} closeParentMenu={closeMenu}
-														 bind:showSubMenuForIndex={showSubMenuForIndex}/>
-						{#if item.subMenu && index === showSubMenuForIndex}
-								<div class="absolute left-full top-0 ml-2 rounded shadow-xl bg-foreground">
-									<svelte:component this={item.subMenu} onComplete={closeMenu}/>
-								</div>
+						<ContextMenuItem {...item} closeParentMenu={closeMenu}
+														 bind:subMenuToShow={subMenuToShow} />
+						{#if item.subMenu && item.subMenu === subMenuToShow}
+							<div class="absolute left-full top-0 ml-2 rounded shadow-xl bg-foreground">
+								<svelte:component this={item.subMenu} onComplete={closeMenu} />
+							</div>
 						{/if}
 					</div>
 				{/each}

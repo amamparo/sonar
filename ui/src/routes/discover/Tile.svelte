@@ -3,9 +3,11 @@
 	export { className as class };
 </script>
 
-<div class="bg-midground rounded-lg p-4 pt-3 text-secondary {className}">
-	<div class="flex justify-between items-center font-circular-bold text-lg pb-3">
-		<slot name="header" />
+<div class="bg-midground rounded-lg p-2.5 pt-2 text-secondary {className}">
+	<div>
+		<div class="flex justify-between items-center font-circular-bold text-lg pb-3 pl-2">
+			<slot name="header" />
+		</div>
 	</div>
 	<slot />
 </div>

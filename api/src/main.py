@@ -27,8 +27,14 @@ def require_token():
 
 @inject
 @app.route('/search/playlists/<path:query>')
-def __stations(spotify: Spotify, query: str):
-    return jsonify(spotify.search(query))
+def __playlist_search(spotify: Spotify, query: str):
+    return jsonify(spotify.search_playlists(query))
+
+
+@inject
+@app.route('/playlist/<playlist_id>/tracks')
+def __playlist_tracks(spotify: Spotify, playlist_id: str):
+    return jsonify(spotify.playlist_tracks(playlist_id))
 
 
 @inject

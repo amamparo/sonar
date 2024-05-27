@@ -1,17 +1,52 @@
 <script>
-	import AddSongsModal from './AddSongsModal.svelte';
 	import Tile from '../Tile.svelte';
 	import PlaylistContextMenu from './contextMenu/PlaylistContextMenu.svelte';
+	import { trackStore } from '$lib';
+	import Spinner from '$lib/components/icon/Spinner.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import ImportPlaylistSubMenu from './contextMenu/ImportPlaylistSubMenu.svelte';
+	import TrashIcon from './contextMenu/icon/TrashIcon.svelte';
+	import PlaylistTrack from './PlaylistTrack.svelte';
 
-	let addingSong = false;
+	let tracks = [];
+	let isUpdating = false;
+	trackStore.subscribe(state => {
+		tracks = state.tracks;
+		isUpdating = state.isUpdating;
+	});
+
+	let subMenuToShow = null;
+
+	const show = subMenu => () => {
+		subMenuToShow = subMenu;
+	};
 </script>
 
-<Tile class="w-1/3">
+<Tile class="flex flex-col w-1/3">
 	<svelte:fragment slot="header">
-		<div>Playlist</div>
-		<PlaylistContextMenu />
+		<div>
+			Playlist
+			<span class="text-muted font-circular-medium font-extralight">
+				{tracks.length && !isUpdating ? ` (${tracks.length} tracks)` : ""}
+			</span>
+		</div>
+		<PlaylistContextMenu bind:subMenuToShow={subMenuToShow} />
 	</svelte:fragment>
+	<div class="flex-grow overflow-auto">
+		{#if isUpdating}
+			<div class="h-full flex items-center justify-center pb-20">
+				<Spinner />
+			</div>
+		{:else if tracks.length === 0}
+			<div class="h-full flex items-center justify-center pb-20">
+				<Button onClick={() => {}}>Add Songs</Button>
+				<span class="px-2">or</span>
+				<Button onClick={show(ImportPlaylistSubMenu)}>Import Playlist</Button>
+			</div>
+		{:else}
+			{#each tracks as track}
+				<PlaylistTrack {...track} />
+			{/each}
+		{/if}
+	</div>
 </Tile>
-{#if addingSong}
-	<AddSongsModal />
-{/if}

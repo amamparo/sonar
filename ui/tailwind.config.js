@@ -14,6 +14,7 @@ export default {
 				// text colors
 				primary: 'var(--text-primary)',
 				secondary: 'var(--text-secondary)',
+				muted: 'var(--text-muted)',
 
 				// misc colors
 				'spotify-green': 'var(--spotify-green)'

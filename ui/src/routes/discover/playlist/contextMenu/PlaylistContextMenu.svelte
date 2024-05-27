@@ -1,17 +1,18 @@
 <script>
-	import { ContextMenu } from '$lib';
+	import { ContextMenu, trackStore } from '$lib';
 	import AddSongsIcon from './icon/AddSongsIcon.svelte';
 	import ExportIcon from './icon/ExportIcon.svelte';
 	import TrashIcon from './icon/TrashIcon.svelte';
 	import ImportIcon from './icon/ImportIcon.svelte';
 	import ImportPlaylistSubMenu from './ImportPlaylistSubMenu.svelte';
+
+	export let subMenuToShow = null
 </script>
 
-<ContextMenu menuClass={'w-44'} items={[
+<ContextMenu bind:subMenuToShow={subMenuToShow} menuClass={'w-44'} items={[
 		{
 			icon: AddSongsIcon,
-			text: 'Add Songs',
-			subMenu: ImportPlaylistSubMenu
+			text: 'Add Songs'
 		},
 		{
 			icon: ImportIcon,
@@ -26,6 +27,8 @@
 		{
 			icon: TrashIcon,
 			text: 'Clear',
-			action: () => console.log('Clearing playlist')
+			action: () => {
+				trackStore.clear();
+			}
 		}
 	]}/>

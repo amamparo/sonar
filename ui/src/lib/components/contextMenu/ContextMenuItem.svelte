@@ -3,14 +3,13 @@
 
 	export let icon: SvelteComponent;
 	export let text: string;
-	export let action: () => void | null;
-	export let subMenu: SvelteComponent;
-	export let index: number;
+	export let action: (() => void) | null = null;
+	export let subMenu: SvelteComponent | null = null;
 
-	export let showSubMenuForIndex;
+	export let subMenuToShow;
 	export let closeParentMenu: () => void;
 
-	$: buttonClass = subMenu && showSubMenuForIndex === index ? 'bg-highlight' : '';
+	$: buttonClass = subMenu && subMenuToShow === subMenu ? 'bg-highlight' : '';
 
 	const wrap = innerAction => {
 		if (innerAction) {
@@ -25,7 +24,7 @@
 		<button class="flex gap-3.5 w-full text-start items-center p-2.5 px-3 rounded
 		hover:bg-highlight {buttonClass}"
 						on:click={wrap(action)} on:pointerenter={() => {
-							showSubMenuForIndex = index;
+							subMenuToShow = subMenu;
 						}}>
 			<svelte:component this={icon} />
 			<span>{text}</span>

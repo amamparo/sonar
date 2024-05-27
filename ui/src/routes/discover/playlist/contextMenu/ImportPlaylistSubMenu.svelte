@@ -1,14 +1,17 @@
 <script>
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import MagnifyingGlass from './icon/MagnifyingGlass.svelte';
 
 	import _ from 'lodash';
-	import { api } from '$lib';
+	import { api, trackStore } from '$lib';
 
 	let searchQuery = '';
 	let searchResults = [];
 	let scrollable = null;
+
+	let searchInput = null;
+
 	export let onComplete = () => {
 	};
 
@@ -18,7 +21,7 @@
 			searchResults = [];
 			return;
 		}
-		searchResults = await api.get(`/search/playlists/${trimmed}`);
+		searchResults = await api.searchPlaylists(trimmed);
 		if (scrollable) {
 			scrollable.scrollTop = 0;
 		}
@@ -33,9 +36,15 @@
 		debouncedHandler.cancel();
 	});
 
-	const onClick = (id) => {
-		console.log(id);
+	onMount(() => {
+		searchInput.focus();
+	})
+
+	const onClick = async (id) => {
 		onComplete();
+		trackStore.setUpdating(true);
+		const playlistTracks = await api.playlistTracks(id);
+		trackStore.setAll(playlistTracks);
 	};
 </script>
 
@@ -45,16 +54,16 @@
 			<MagnifyingGlass />
 		</div>
 		<input class="bg-highlight block w-full p-2 ps-10 text-sm rounded focus:outline-none"
-					 placeholder="Search for a playlist" on:input={handleInput} />
+					 placeholder="Search for a playlist" on:input={handleInput} bind:this={searchInput}/>
 	</div>
 	{#if searchResults.length}
 		<div class="results mt-2 max-h-[75vh] overflow-y-auto overflow-x-hidden" bind:this={scrollable}>
-			{#each searchResults as { author, id, image, name }}
-				<div class="flex items-center p-2 px-2.5 rounded hover:bg-highlight hover:cursor-pointer"
+			{#each searchResults as { author, id, imageUrl, title }}
+				<div class="flex items-center p-1.5 rounded hover:bg-highlight hover:cursor-pointer"
 						 on:click={onClick(id)}>
-					<img class="w-12 h-12 rounded" src={image} alt={name} />
-					<div class="flex flex-col ms-3 overflow-hidden">
-						<div class="text-base text-primary truncate">{name}</div>
+					<img class="w-12 h-12 flex-none rounded" src={imageUrl} alt={title} />
+					<div class="flex flex-col flex-1 ms-2 overflow-hidden">
+						<div class="text-base text-primary truncate">{title}</div>
 						<div class="text-sm text-secondary truncate">{author}</div>
 					</div>
 				</div>
