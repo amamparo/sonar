@@ -26,7 +26,7 @@
 		<img src={imageUrl} alt={album} />
 	</div>
 	<div class="flex flex-col flex-1 ms-3 overflow-hidden">
-		<div class="text-base text-primary font-extralight truncate">{title}</div>
+		<div class="text-base text-primary truncate">{title}</div>
 		<div class="text-sm text-secondary truncate">{artist}</div>
 	</div>
 	{#if isHovered}
