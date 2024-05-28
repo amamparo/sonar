@@ -1,9 +1,9 @@
 import { type Subscriber, type Writable, writable } from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
 
 type State = {
 	currentUrl: string | null;
 	currentSource: string | null;
+	currentDuration: number;
 }
 
 class PreviewPlayer {
@@ -19,6 +19,13 @@ class PreviewPlayer {
 				return state;
 			});
 		}
+
+		this.audio.addEventListener('loadedmetadata', () => {
+			this.store.update(state => {
+				state.currentDuration = this.audio.duration;
+				return state;
+			})
+		})
 
 		this.store.subscribe(state => {
 			this.currentState = state;

@@ -2,7 +2,7 @@
 	import { previewPlayer, trackStore } from '$lib';
 	import TrashIcon from '$lib/components/icon/Trash.svelte';
 	import Play from '$lib/components/icon/Play.svelte';
-	import { onMount } from 'svelte';
+	import Stop from '$lib/components/icon/Stop.svelte';
 
 	export let imageUrl;
 	export let album;
@@ -21,10 +21,12 @@
 		trackStore.delete(id);
 	};
 
-	let isPreviewPlaying = false
+	let isPreviewPlaying = false;
+	let previewDuration = 0;
 	previewPlayer.subscribe(state => {
-		isPreviewPlaying = state.currentSource === id
-	})
+		isPreviewPlaying = state.currentSource === id;
+		previewDuration = state.currentDuration;
+	});
 </script>
 
 
@@ -33,9 +35,19 @@
 	<div class="relative w-12 h-12 flex-none rounded overflow-hidden hover:cursor-pointer">
 		<img src={imageUrl} alt={album} class="absolute" />
 		{#if isHovered || isPreviewPlaying}
-			<div class="bg-background h-full w-full rounded absolute z-50 opacity-70" on:click={() => previewPlayer.toggle(previewUrl, id)}>
-				<div class="fill-primary p-3 hover:p-2.5 hover:transition-all transition-all">
-					<Play />
+			<div class="relative h-full w-full rounded absolute z-20"
+					 on:click={() => previewPlayer.toggle(previewUrl, id)}>
+				<div class="absolute bg-background inset-0 z-30 opacity-70"></div>
+				{#if isPreviewPlaying && previewDuration}
+					<div class="absolute preview-progress bg-spotify-green inset-0 z-40 opacity-50"
+							 style="animation-duration: {previewDuration}s;"></div>
+				{/if}
+				<div class="absolute inset-0 p-3 hover:p-2.5 hover:transition-all transition-all fill-primary z-50">
+					{#if isPreviewPlaying}
+						<Stop />
+					{:else}
+						<Play />
+					{/if}
 				</div>
 			</div>
 		{/if}
@@ -51,3 +63,18 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+    @keyframes preview-progress {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    .preview-progress {
+        animation: preview-progress linear forwards;
+    }
+</style>
