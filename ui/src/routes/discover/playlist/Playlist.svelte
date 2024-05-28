@@ -5,7 +5,6 @@
 	import Spinner from '$lib/components/icon/Spinner.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import ImportPlaylistSubMenu from './contextMenu/ImportPlaylistSubMenu.svelte';
-	import TrashIcon from '$lib/components/icon/Trash.svelte';
 	import PlaylistTrack from './PlaylistTrack.svelte';
 	import AddSongsSubMenu from './contextMenu/addSongsSubMenu/AddSongsSubMenu.svelte';
 

@@ -5,4 +5,6 @@ import ContextMenu from './components/contextMenu/ContextMenu.svelte';
 import trackStore from './tracks.ts';
 import type { Track, Playlist } from '$lib/models';
 
-export { api, ContextMenu, Track, Playlist, trackStore };
+import previewPlayer from './previewPlayer.ts';
+
+export { api, ContextMenu, Track, Playlist, trackStore, previewPlayer };
