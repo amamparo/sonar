@@ -36,12 +36,12 @@ class PreviewPlayer {
 	}
 
 	play(track: Track) {
+		this.audio.src = track.previewUrl;
+		this.audio.play();
 		this.store.update(state => {
 			state.currentTrack = track;
 			return state;
 		})
-		this.audio.src = track.previewUrl;
-		this.audio.play();
 	}
 
 	stop() {

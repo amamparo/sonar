@@ -54,7 +54,7 @@
 	});
 </script>
 
-<div class="p-1 min-w-96 w-[30vw]">
+<div class="p-1 w-96">
 	<div class="relative">
 		<div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
 			<MagnifyingGlass />

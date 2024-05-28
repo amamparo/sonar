@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 export async function load() {
-	const redirectUri = `${import.meta.env.VITE_SPOTIFY_REDIRECT_URI_BASE_URL}/auth/callback`;
+	const redirectUri = `${import.meta.env.VITE_SPOTIFY_REDIRECT_URI_BASE_URL}/login/callback`;
 	redirect(
 		302,
 		[

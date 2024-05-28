@@ -54,7 +54,7 @@
 						<ContextMenuItem {...item} closeParentMenu={closeMenu}
 														 bind:subMenuToShow={subMenuToShow} />
 						{#if item.subMenu && item.subMenu === subMenuToShow}
-							<div class="absolute left-full top-0 ml-2 rounded shadow-xl bg-foreground">
+							<div class="absolute left-full top-0 ml-2.5 rounded shadow-xl bg-foreground">
 								<svelte:component this={item.subMenu} onComplete={closeMenu} />
 							</div>
 						{/if}

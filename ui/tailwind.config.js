@@ -19,6 +19,9 @@ export default {
 				// misc colors
 				'spotify-green': 'var(--spotify-green)'
 			},
+			screens: {
+				'3xl': '2048px'
+			}
 		},
 	},
 	plugins: [require('@tailwindcss/typography')]

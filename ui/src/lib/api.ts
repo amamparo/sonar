@@ -54,7 +54,7 @@ class Api {
 			}
 		});
 		if (response.status >= 400 && response.status <= 403) {
-			window.location.href = '/auth';
+			window.location.href = '/login';
 		} else if (response.status == 404) {
 			return null;
 		}
