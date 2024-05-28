@@ -49,7 +49,7 @@
 			</div>
 		{:else}
 			{#each tracks as track}
-				<PlaylistTrack {...track} />
+				<PlaylistTrack {track} />
 			{/each}
 		{/if}
 	</div>

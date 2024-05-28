@@ -1,8 +1,8 @@
 import { type Subscriber, type Writable, writable } from 'svelte/store';
+import type { Track } from '$lib/models';
 
 type State = {
-	currentUrl: string | null;
-	currentSource: string | null;
+	currentTrack: Track | null;
 	currentDuration: number;
 }
 
@@ -14,8 +14,7 @@ class PreviewPlayer {
 	constructor() {
 		this.audio.onended = () => {
 			this.store.update(state => {
-				state.currentUrl = null;
-				state.currentSource = null;
+				state.currentTrack = null;
 				return state;
 			});
 		}
@@ -36,13 +35,12 @@ class PreviewPlayer {
 		this.store.subscribe(run);
 	}
 
-	play(url: string, source: string) {
+	play(track: Track) {
 		this.store.update(state => {
-			state.currentUrl = url;
-			state.currentSource = source;
+			state.currentTrack = track;
 			return state;
 		})
-		this.audio.src = url;
+		this.audio.src = track.previewUrl;
 		this.audio.play();
 	}
 
@@ -50,17 +48,16 @@ class PreviewPlayer {
 		this.audio.pause();
 		this.audio.currentTime = 0;
 		this.store.update(state => {
-			state.currentUrl = null;
-			state.currentSource = null;
+			state.currentTrack = null;
 			return state;
 		});
 	}
 
-	toggle(url: string, source: string) {
-		if (this.currentState.currentSource === source) {
+	toggle(track: Track) {
+		if (this.currentState.currentTrack === track) {
 			this.stop();
 		} else {
-			this.play(url, source)
+			this.play(track)
 		}
 	}
 }
