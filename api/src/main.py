@@ -1,12 +1,14 @@
+import functools
 import logging
 import traceback
 
 import awsgi
-from flask import Flask, Response, jsonify, request, g
+from flask import Flask, Response, jsonify, request, g, make_response
 from flask_cors import CORS
 from flask_injector import FlaskInjector
 from injector import inject
 
+from src.recommendations import RecommendationsService
 from src.spotify import Spotify
 from src.spotify_unauthorized import SpotifyUnauthorized
 
@@ -14,15 +16,9 @@ app = Flask(__name__)
 CORS(app)
 
 
-@inject
 @app.before_request
-def require_token():
-    if request.method == 'OPTIONS':
-        return jsonify({}, 200)
-    token = request.headers.get('token')
-    if not token:
-        return jsonify({"error": "Missing required token"}), 401
-    g.token = token
+def get_token():
+    g.token = request.headers.get('token')
 
 
 @inject
@@ -40,7 +36,13 @@ def __search_tracks(spotify: Spotify, query: str):
 @inject
 @app.route('/playlist/<playlist_id>/tracks')
 def __playlist_tracks(spotify: Spotify, playlist_id: str):
-    return jsonify(spotify.playlist_tracks(playlist_id))
+    return jsonify(spotify.get_playlist_tracks(playlist_id))
+
+
+@inject
+@app.route('/recommendations', methods=['POST'])
+def __recommendations(recommendations: RecommendationsService):
+    return jsonify(recommendations.get_recommendations(request.get_json()))
 
 
 @inject

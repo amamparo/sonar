@@ -5,6 +5,7 @@
 	import Playlist from './playlist/Playlist.svelte';
 	import { goto } from '$app/navigation';
 	import Logout from '$lib/components/icon/Logout.svelte';
+	import Recommendations from './recommendations/Recommendations.svelte';
 
 	onMount(() => {
 		if (!api.hasToken()) {
@@ -24,11 +25,7 @@
 	<div class="flex-grow overflow-hidden flex">
 		<div class="space-x-3 w-full flex">
 			<Playlist />
-			<Tile class="w-2/3">
-				<svelte:fragment slot="header">
-					Analysis
-				</svelte:fragment>
-			</Tile>
+			<Recommendations />
 		</div>
 	</div>
 	<footer class="mx-auto text-muted font-circular-book text-sm">

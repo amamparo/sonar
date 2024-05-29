@@ -2,7 +2,7 @@ import { type Subscriber, type Writable, writable } from 'svelte/store';
 import type { Track } from '$lib/models';
 
 type State = {
-	currentTrack: Track | null;
+	currentTrackId: string | null;
 	currentDuration: number;
 }
 
@@ -14,7 +14,7 @@ class PreviewPlayer {
 	constructor() {
 		this.audio.onended = () => {
 			this.store.update(state => {
-				state.currentTrack = null;
+				state.currentTrackId = null;
 				return state;
 			});
 		}
@@ -39,7 +39,7 @@ class PreviewPlayer {
 		this.audio.src = track.previewUrl;
 		this.audio.play();
 		this.store.update(state => {
-			state.currentTrack = track;
+			state.currentTrackId = track.id;
 			return state;
 		})
 	}

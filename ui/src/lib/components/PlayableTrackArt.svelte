@@ -10,7 +10,7 @@
 	let isPreviewPlaying = false;
 	let previewDuration = 0;
 	previewPlayer.subscribe(state => {
-		isPreviewPlaying = state.currentTrack === track;
+		isPreviewPlaying = state.currentTrackId === track.id;
 		previewDuration = state.currentDuration;
 	});
 

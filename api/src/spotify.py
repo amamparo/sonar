@@ -1,22 +1,12 @@
-from dataclasses import dataclass
 from urllib import parse
-from typing import List
+from typing import List, Dict
 
 import requests
 from flask import g
 from injector import singleton
 
+from src.models import Track, AudioFeatures
 from src.spotify_unauthorized import SpotifyUnauthorized
-
-
-@dataclass
-class Track:
-    id: str
-    title: str
-    artist: str
-    album: str
-    image_url: str
-    preview_url: str
 
 
 @singleton
@@ -37,8 +27,8 @@ class Spotify:
 
     def search_tracks(self, query: str) -> List[Track]:
         tracks = (self.__get('/v1/search', {'q': query, 'type': 'track', 'limit': 50})
-                     .get('tracks', {})
-                     .get('items', []))
+                  .get('tracks', {})
+                  .get('items', []))
         return [
             Track(
                 id=x['id'],
@@ -51,7 +41,7 @@ class Spotify:
             for x in tracks
         ]
 
-    def playlist_tracks(self, playlist_id) -> List[Track]:
+    def get_playlist_tracks(self, playlist_id) -> List[Track]:
         initial_response = self.__get(f'/v1/playlists/{playlist_id}/tracks', {
             'limit': 100
         })
@@ -73,7 +63,40 @@ class Spotify:
             for x in items
         ]
 
-    def __get(self, path: str, params: dict) -> dict:
+    def get_audio_features(self, track_ids: List[str]) -> Dict[str, AudioFeatures]:
+        batches = [track_ids[i:i + 100] for i in range(0, len(track_ids), 100)]
+        result = {}
+        for batch_ids in batches:
+            result.update({
+                x['id']: AudioFeatures(
+                    acousticness=x['acousticness'],
+                    danceability=x['danceability'],
+                    energy=x['energy'],
+                    instrumentalness=x['instrumentalness'],
+                    liveness=x['liveness'],
+                    speechiness=x['speechiness'],
+                    valence=x['valence']
+                )
+                for x in self.__get('/v1/audio-features', {'ids': ','.join(batch_ids)}).get('audio_features', [])
+            })
+        return result
+
+    def get_recommendations(self, track_ids: List[str]) -> List[Track]:
+        tracks = self.__get('/v1/recommendations', {'seed_tracks': ','.join(track_ids), 'limit': 100})['tracks']
+        return [
+            Track(
+                id=t['id'],
+                title=t['name'],
+                artist=', '.join([a['name'] for a in t['artists']]),
+                album=t['album']['name'],
+                image_url=next((t for t in sorted(t['album']['images'], key=lambda i: i['height'])), {}).get('url'),
+                preview_url=t['preview_url']
+            )
+            for t in tracks
+        ]
+
+    @staticmethod
+    def __get(path: str, params: dict) -> dict:
         return Spotify.__get_full(f'https://api.spotify.com{path}?{parse.urlencode(params)}')
 
     @staticmethod

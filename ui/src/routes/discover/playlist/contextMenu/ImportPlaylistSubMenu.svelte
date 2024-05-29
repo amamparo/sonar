@@ -43,7 +43,7 @@
 	const onClick = async (id) => {
 		onComplete();
 		trackStore.setUpdating(true);
-		const playlistTracks = await api.playlistTracks(id);
+		const playlistTracks = await api.getPlaylistTracks(id);
 		trackStore.setAll(playlistTracks);
 	};
 </script>

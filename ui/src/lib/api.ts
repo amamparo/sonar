@@ -16,7 +16,7 @@ class Api {
 		}));
 	}
 
-	async playlistTracks(playlistId: string): Promise<Track[]> {
+	async getPlaylistTracks(playlistId: string): Promise<Track[]> {
 		const response = await this.get(`/playlist/${playlistId}/tracks`);
 		if (!response) {
 			return [];
@@ -46,13 +46,32 @@ class Api {
 		}));
 	}
 
+	async getRecommendations(tracks: Track[]) {
+		return this.post('/recommendations', tracks.map(track => track.id));
+
+	}
+
+	private async post(path: string, data: any) {
+		return this.request('POST', path, data);
+	}
+
 	private async get(path: string) {
+		return this.request('GET', path);
+	}
+
+	private async request(method: string, path: string, data?: any) {
 		const url = `${import.meta.env.VITE_API_BASE_URL}${path}`;
-		const response = await fetch(url, {
+		const fetchOptions: RequestInit = {
+			method,
 			headers: {
 				token: this.getToken() || ''
 			}
-		});
+		};
+		if (data) {
+			fetchOptions.headers!['Content-Type'] = 'application/json';
+			fetchOptions.body = JSON.stringify(data);
+		}
+		const response = await fetch(url, fetchOptions);
 		if (response.status >= 400 && response.status <= 403) {
 			window.location.href = '/login';
 		} else if (response.status == 404) {
