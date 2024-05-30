@@ -82,7 +82,7 @@ class Spotify:
         return result
 
     def get_recommendations(self, track_ids: List[str]) -> List[Track]:
-        tracks = self.__get('/v1/recommendations', {'seed_tracks': ','.join(track_ids), 'limit': 100})['tracks']
+        tracks = self.__get('/v1/recommendations', {'seed_tracks': ','.join(track_ids)})['tracks']
         return [
             Track(
                 id=t['id'],

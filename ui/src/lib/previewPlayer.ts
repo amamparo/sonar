@@ -48,13 +48,13 @@ class PreviewPlayer {
 		this.audio.pause();
 		this.audio.currentTime = 0;
 		this.store.update(state => {
-			state.currentTrack = null;
+			state.currentTrackId = null;
 			return state;
 		});
 	}
 
 	toggle(track: Track) {
-		if (this.currentState.currentTrack === track) {
+		if (this.currentState.currentTrackId === track.id) {
 			this.stop();
 		} else {
 			this.play(track)

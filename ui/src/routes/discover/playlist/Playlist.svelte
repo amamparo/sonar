@@ -38,7 +38,7 @@
 	</svelte:fragment>
 	<div class="flex-grow overflow-auto">
 		{#if isUpdating}
-			<div class="h-full flex items-center justify-center pb-20">
+			<div class="h-full flex items-center justify-center">
 				<Spinner />
 			</div>
 		{:else if tracks.length === 0}

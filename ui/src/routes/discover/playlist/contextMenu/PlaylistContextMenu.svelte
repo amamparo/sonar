@@ -10,7 +10,7 @@
 	export let subMenuToShow = null
 </script>
 
-<ContextMenu bind:subMenuToShow={subMenuToShow} menuClass={'w-44'} items={[
+<ContextMenu bind:subMenuToShow={subMenuToShow} menuClass={'w-44 z-10'} items={[
 		{
 			icon: AddSongsIcon,
 			text: 'Add Tracks',

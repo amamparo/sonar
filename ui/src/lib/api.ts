@@ -1,4 +1,4 @@
-import type { Playlist, Track } from './models';
+import type { Playlist, Recommendations, Track } from './models';
 
 class Api {
 	private static readonly SPOTIFY_TOKEN = 'spotify_token';
@@ -46,8 +46,20 @@ class Api {
 		}));
 	}
 
-	async getRecommendations(tracks: Track[]) {
-		return this.post('/recommendations', tracks.map(track => track.id));
+	async getRecommendations(tracks: Track[]): Promise<Recommendations> {
+		const response = await this.post('/recommendations', tracks.map(track => track.id));
+		return {
+			inputAverageFeatures: response.input_average_features,
+			recommendations: response.recommendations.map((item: object) => ({
+				id: item.id,
+				title: item.title,
+				artist: item.artist,
+				album: item.album,
+				previewUrl: item.preview_url,
+				imageUrl: item.image_url,
+				features: item.features
+			}))
+		};
 
 	}
 

@@ -53,7 +53,7 @@ class RecommendationsService:
         for batch_ids in batches:
             recommended_tracks = self.__spotify.get_recommendations(batch_ids)
             for track in recommended_tracks:
-                if track.id in track_ids:
+                if track.id in track_ids or not track.preview_url:
                     continue
                 results.add(track)
                 if len(results) == 100:

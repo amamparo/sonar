@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { api } from '$lib';
-	import Tile from './Tile.svelte';
 	import Playlist from './playlist/Playlist.svelte';
 	import { goto } from '$app/navigation';
 	import Logout from '$lib/components/icon/Logout.svelte';
