@@ -4,6 +4,7 @@
 	import Spinner from '$lib/components/icon/Spinner.svelte';
 	import Tile from '../Tile.svelte';
 	import Chart from './Chart.svelte';
+	import selectedTrackStore from './selectedTrackStore';
 
 	let isLoading = true;
 	let recommendations: Recommendations | null = null;
@@ -18,18 +19,14 @@
 	});
 
 	let selectedTracks = [];
-
-	function addSelectedTracksToPlaylist() {
-		trackStore.addAll(selectedTracks);
-		selectedTracks = [];
-		clearSelections();
-	}
-
-	const setSelectedTracks = (tracks) => {
+	selectedTrackStore.subscribe(tracks => {
 		selectedTracks = tracks;
-	};
+	});
 
-	let clearSelections
+	const addSelections = () => {
+		trackStore.addAll(selectedTracks);
+		selectedTrackStore.clear();
+	};
 </script>
 
 <Tile class="w-2/3">
@@ -46,14 +43,15 @@
 		</div>
 	{:else}
 		<div class="flex flex-col h-full">
-			<div class="flex-grow">
-				<div class="h-full w-full overflow-hidden">
-					<Chart bind:recommendations={recommendations} bind:clearSelections={clearSelections} setSelectedTracks={setSelectedTracks} />
-				</div>
+			<div class="w-full flex-grow">
+				<Chart {recommendations} />
 			</div>
-			<div class="items-center justify-center mx-auto p-4">
+			<div class="items-center justify-center mx-auto p-3 pb-5 space-x-2">
 				{#if selectedTracks && selectedTracks.length > 0}
-					<Button onClick={addSelectedTracksToPlaylist}>
+					<Button onClick={selectedTrackStore.clear} class="hover:border-red-600 hover:text-red-600">
+						Clear Selections
+					</Button>
+					<Button onClick={addSelections} class="hover:border-spotify-green hover:text-spotify-green">
 						Add {selectedTracks.length} Track{selectedTracks.length > 1 ? 's' : ''}
 					</Button>
 				{:else}

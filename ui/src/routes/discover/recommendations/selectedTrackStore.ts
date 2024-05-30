@@ -1,6 +1,9 @@
 import { writable } from 'svelte/store';
 
-export default writable({
-	selectedTrackIds: [],
-	selectTrackIds
-});
+const { subscribe, set } = writable([])
+
+export default {
+	subscribe,
+	setAll: tracks => set(tracks),
+	clear: () => set([])
+};

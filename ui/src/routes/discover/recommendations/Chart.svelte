@@ -5,6 +5,22 @@
 </script>
 
 <script lang="ts">
+
+	import selectedTrackStore from './selectedTrackStore';
+
+	export let recommendations;
+
+	let selectedDataPointIndexes = [];
+
+	selectedTrackStore.subscribe(tracks => {
+		if (tracks.length === 0) {
+			const copy = [...selectedDataPointIndexes];
+			for (const index of copy) {
+				myChart.toggleDataPointSelection(0, index);
+			}
+		}
+	});
+
 	let myChart;
 	const chart = (node, options) => {
 		myChart = new ApexCharts(node, options);
@@ -16,21 +32,6 @@
 			}
 		};
 	};
-
-	export let recommendations;
-
-	export let clearSelections = () => {
-		const copy = [...selectedDataPointIndexes];
-		for (const index of copy) {
-			myChart.toggleDataPointSelection(0, index);
-		}
-	}
-
-	export let setSelectedTracks = () => {};
-
-	let selectedDataPointIndexes = [];
-
-	export let selectedTracks;
 
 	let hoveredTrack = null;
 
@@ -60,7 +61,6 @@
 	let options = {
 		chart: {
 			type: 'scatter',
-			height: '100%',
 			width: '100%',
 			animations: {
 				enabled: false
@@ -92,12 +92,21 @@
 						hoveredTrack = track;
 					}
 				},
-				dataPointMouseLeave: (event, chartContext, config) => {
+				dataPointMouseLeave: () => {
 					hoveredTrack = null;
 				},
 				dataPointSelection: (event, chartContext, config) => {
 					selectedDataPointIndexes = config.selectedDataPoints[0];
-					setSelectedTracks(selectedDataPointIndexes.map((index) => recommendations.recommendations[index]));
+					selectedTrackStore.setAll(
+						selectedDataPointIndexes.map((index) => recommendations.recommendations[index])
+					);
+				},
+				mounted: () => {
+					myChart.updateOptions({
+						chart: {
+							height: '100%'
+						}
+					})
 				}
 			}
 		},
