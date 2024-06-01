@@ -37,7 +37,7 @@ class RecommendationsService:
             if track.features:
                 results.append(track)
 
-        return sorted(results, key=lambda x: x.features.cosine_similarity(mean_features), reverse=True)[:250]
+        return sorted(results, key=lambda x: x.features.cosine_similarity(mean_features), reverse=True)[:100]
 
     def __get_recommended_tracks(self, seed_tracks: List[Track], target_features: AudioFeatures) -> List[Track]:
         recommendations = self.__spotify.get_recommendations(seed_tracks, target_features)

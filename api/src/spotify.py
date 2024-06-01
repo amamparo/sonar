@@ -146,7 +146,7 @@ class Spotify:
             futures = [executor.submit(self.__get_recommendations, batch, target_features, token) for batch in batches]
             for future in as_completed(futures):
                 recommendations.extend(future.result())
-        return [x for x in recommendations if x not in seed_tracks and x.preview_url]
+        return [x for x in list(set(recommendations)) if x not in seed_tracks and x.preview_url]
 
     def __get_recommendations(self, seed_tracks: List[Track], target_features: AudioFeatures,
                               token: str) -> List[Track]:
