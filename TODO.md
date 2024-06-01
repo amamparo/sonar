@@ -1,6 +1,10 @@
 # TODO
 
 ## Must do before release
+* show a singleton toast notification when:
+  * track(s) added: "Added track to playlist" / "Added {n} tracks to playlist"
+  * track(s) deleted: "Deleted track" / "Deleted all tracks"
+  * playlist exported: "Successfully exported to "{n}""
 * export playlist
 * think of a better name + logo/favicon
 * landing page w/ screenshots (with good SEO practices)
