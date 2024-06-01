@@ -29,16 +29,4 @@ class RecommendationsService:
             feature.name: sum([getattr(x, feature.name) for x in seed_features]) / len(seed_features)
             for feature in fields(AudioFeatures)
         })
-        recommended_tracks = self.__get_recommended_tracks(seed_tracks, mean_features)
-        results = []
-        features = self.__spotify.get_audio_features(recommended_tracks)
-        for track in recommended_tracks:
-            track.features = features.get(track.id)
-            if track.features:
-                results.append(track)
-
-        return sorted(results, key=lambda x: x.features.cosine_similarity(mean_features), reverse=True)[:100]
-
-    def __get_recommended_tracks(self, seed_tracks: List[Track], target_features: AudioFeatures) -> List[Track]:
-        recommendations = self.__spotify.get_recommendations(seed_tracks, target_features)
-        return recommendations
+        return self.__spotify.get_recommendations(seed_tracks, mean_features)[:100]
