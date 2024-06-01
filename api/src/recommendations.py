@@ -19,15 +19,12 @@ class RecommendationsService:
     def __init__(self, spotify: Spotify):
         self.__spotify = spotify
 
-    def get_recommendations(self, track_ids: List[str]) -> List[Track]:
-        return self.__get_recommendations(track_ids)
-
-    def __get_recommendations(self, track_ids: List[str]) -> List[Track]:
-        tracks = self.__get_recommended_tracks(track_ids)
-        features = self.__spotify.get_audio_features([t.id for t in tracks])
-        for track in tracks:
+    def get_recommendations(self, seed_tracks: List[Track]) -> List[Track]:
+        recommended_tracks = self.__get_recommended_tracks([x.id for x in seed_tracks])
+        features = self.__spotify.get_audio_features([t.id for t in recommended_tracks])
+        for track in recommended_tracks:
             track.features = features.get(track.id)
-        return [t for t in tracks if t.features]
+        return [t for t in recommended_tracks if t.features]
 
     def __get_recommended_tracks(self, track_ids: List[str]) -> List[Track]:
         shuffle(track_ids)

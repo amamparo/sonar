@@ -47,7 +47,7 @@ class Api {
 	}
 
 	async getRecommendations(tracks: Track[], signal: AbortSignal): Promise<Track[]> {
-		const response = await this.post('/recommendations', tracks.map(track => track.id), signal);
+		const response = await this.post('/recommendations', tracks, signal);
 		return response.map((item: object) => ({
 			id: item.id,
 			title: item.title,
@@ -73,12 +73,14 @@ class Api {
 			method,
 			headers: {
 				token: this.getToken() || ''
-			},
-			signal
+			}
 		};
 		if (data) {
 			fetchOptions.headers!['Content-Type'] = 'application/json';
 			fetchOptions.body = JSON.stringify(data);
+		}
+		if (signal) {
+			fetchOptions.signal = signal;
 		}
 		const response = await fetch(url, fetchOptions);
 		if (response.status >= 400 && response.status <= 403) {

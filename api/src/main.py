@@ -1,13 +1,14 @@
-import functools
 import logging
 import traceback
 
 import awsgi
-from flask import Flask, Response, jsonify, request, g, make_response
+import humps
+from flask import Flask, Response, jsonify, request, g
 from flask_cors import CORS
 from flask_injector import FlaskInjector
 from injector import inject
 
+from src.models import Track
 from src.recommendations import RecommendationsService
 from src.spotify import Spotify
 from src.spotify_unauthorized import SpotifyUnauthorized
@@ -42,7 +43,7 @@ def __playlist_tracks(spotify: Spotify, playlist_id: str):
 @inject
 @app.route('/recommendations', methods=['POST'])
 def __recommendations(recommendations: RecommendationsService):
-    return jsonify(recommendations.get_recommendations(request.get_json()))
+    return jsonify(recommendations.get_recommendations([Track(**humps.decamelize(x)) for x in request.get_json()]))
 
 
 @inject

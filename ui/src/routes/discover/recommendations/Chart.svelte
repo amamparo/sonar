@@ -5,10 +5,44 @@
 </script>
 
 <script lang="ts">
-
 	import selectedTrackStore from './selectedTrackStore';
+	import Button from '$lib/components/Button.svelte';
+	import { trackStore } from '$lib';
+	import AxisSelect from './AxisSelect.svelte';
+	import _ from 'lodash';
+	import { onMount } from 'svelte';
+	import features from './features';
+	import { Stats } from 'fast-stats';
 
 	export let recommendations;
+
+	let xAxisFeature;
+	let yAxisFeature;
+	let isZoomed = false;
+
+	onMount(() => {
+		if ((recommendations || []).length === 0) {
+			return [];
+		}
+		const featureOptimalnesses = features.reduce((accum, featureKey) => {
+			const featureValues = recommendations.map(({ features }) => features[featureKey]);
+			const stats = new Stats().push(featureValues);
+			const mean = stats.amean();
+			const stddev = stats.stddev();
+			const zScores = featureValues.map(x => Math.abs(x - mean) / stddev);
+			const maxZScore = Math.max(...zScores);
+			return {
+				...accum,
+				[featureKey]: -maxZScore
+			};
+		}, {});
+		const featuresSortedByOptimalness = _.sortBy(
+			Object.entries(featureOptimalnesses),
+			([_, optimalness]) => optimalness
+		).map(([key, _]) => key).reverse();
+		xAxisFeature = featuresSortedByOptimalness[0];
+		yAxisFeature = featuresSortedByOptimalness[1];
+	});
 
 	let selectedDataPointIndexes = [];
 
@@ -33,17 +67,11 @@
 		};
 	};
 
-	let hoveredTrack = null;
-
-	$: if (hoveredTrack != null) {
-		previewPlayer.play(hoveredTrack);
-	} else {
-		previewPlayer.stop();
-	}
-
 	const axisOptions = {
 		type: 'numeric',
-		tickAmount: 5,
+		tickAmount: 6,
+		min: 0,
+		max: 1,
 		axisBorder: {
 			show: false
 		},
@@ -62,6 +90,9 @@
 		chart: {
 			type: 'scatter',
 			width: '100%',
+			height: '100%',
+			offsetX: -7,
+			offsetY: -15,
 			animations: {
 				enabled: false
 			},
@@ -69,16 +100,7 @@
 				enabled: false
 			},
 			toolbar: {
-				show: true,
-				tools: {
-					reset: true,
-					zoom: true,
-					zoomin: false,
-					zoomout: false,
-					pan: false,
-					download: false,
-					selection: false
-				}
+				show: false
 			},
 			zoom: {
 				enabled: true,
@@ -88,12 +110,10 @@
 			events: {
 				dataPointMouseEnter: (event, chartContext, config) => {
 					const track = recommendations[config.dataPointIndex];
-					if (hoveredTrack == null || track.id !== hoveredTrack.id) {
-						hoveredTrack = track;
-					}
+					previewPlayer.play(track);
 				},
 				dataPointMouseLeave: () => {
-					hoveredTrack = null;
+					previewPlayer.stop();
 				},
 				dataPointSelection: (event, chartContext, config) => {
 					selectedDataPointIndexes = config.selectedDataPoints[0];
@@ -106,7 +126,10 @@
 						chart: {
 							height: '100%'
 						}
-					})
+					});
+				},
+				zoomed: (chartContext, {xaxis, yaxis}) => {
+					isZoomed = true;
 				}
 			}
 		},
@@ -171,15 +194,70 @@
 		}
 	};
 
-	$: options.series = [{
-		data: recommendations?.map((track) => ({
-			x: track.features.energy,
-			y: track.features.valence
-		}))
-	}];
+	$: {
+		const x = (recommendations || []).map(({ features }) => features[xAxisFeature]);
+		const y = (recommendations || []).map(({ features }) => features[yAxisFeature]);
+		const minX = _.min(x);
+		const rangeX = _.max(x) - minX;
+		const minY = _.min(y);
+		const rangeY = _.max(y) - minY;
+		options.series = [{
+			data: _.zip(x, y).map(([x, y]) => {
+				return {
+					x: (x - minX) / rangeX,
+					y: (y - minY) / rangeY
+				};
+			})
+		}];
+	}
+
+	let selectedTracks = [];
+	selectedTrackStore.subscribe(tracks => {
+		selectedTracks = tracks;
+	});
+
+	const addSelections = () => {
+		trackStore.addAll(selectedTracks);
+		selectedTrackStore.clear();
+	};
+
+	const resetZoom = () => {
+		myChart.resetSeries();
+		isZoomed = false;
+	}
+
+	$: if (xAxisFeature && yAxisFeature) {
+		resetZoom();
+	}
 </script>
 
-<div use:chart={options} class="z-0" />
+<div class="flex flex-col h-full">
+	<div class="w-full px-4 flex z-10 space-x-10 flex-0">
+		<AxisSelect axis="X" bind:featureValue={xAxisFeature} bind:otherFeatureValue={yAxisFeature} />
+		<AxisSelect axis="Y" bind:featureValue={yAxisFeature} bind:otherFeatureValue={xAxisFeature} />
+		{#if isZoomed}
+			<Button class="text-sm text-secondary hover:text-primary hover:border-primary"
+			onClick={resetZoom}>
+				Reset Zoom
+			</Button>
+		{/if}
+	</div>
+	<div class="w-full flex-grow">
+		<div use:chart={options} class="z-0" />
+	</div>
+	<div class="items-center justify-center mx-auto p-0 pb-5 space-x-2">
+		{#if selectedTracks && selectedTracks.length > 0}
+			<Button onClick={addSelections} class="hover:border-spotify-green hover:text-spotify-green">
+				Add {selectedTracks.length} Track{selectedTracks.length > 1 ? 's' : ''}
+			</Button>
+			<Button onClick={selectedTrackStore.clear} class="hover:border-red-600 hover:text-red-600">
+				Clear Selections
+			</Button>
+		{:else}
+			<span class="text-muted font-circular-book">Click on recommendations to queue them for your playlist.</span>
+		{/if}
+	</div>
+</div>
 
 <style lang="scss">
   :global {
