@@ -6,5 +6,6 @@ export default [
 	'liveness',
 	'loudness',
 	'speechiness',
+	'tempo',
 	'valence'
 ];

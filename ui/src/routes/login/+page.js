@@ -1,12 +1,13 @@
 import { redirect } from '@sveltejs/kit';
+import { SPOTIFY_CLIENT_ID } from '$lib/env.ts';
+import { redirectUri } from '$lib/api.ts';
 
 export async function load() {
-	const redirectUri = `${import.meta.env.VITE_SPOTIFY_REDIRECT_URI_BASE_URL}/login/callback`;
 	redirect(
 		302,
 		[
-			'https://accounts.spotify.com/authorize?response_type=token',
-			`&client_id=${import.meta.env.VITE_SPOTIFY_CLIENT_ID}`,
+			'https://accounts.spotify.com/authorize?response_type=code',
+			`&client_id=${SPOTIFY_CLIENT_ID}`,
 			`&scope=${encodeURIComponent(
 				[
 					'user-read-private',

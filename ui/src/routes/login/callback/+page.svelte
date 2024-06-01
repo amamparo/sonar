@@ -1,10 +1,11 @@
 <script>
-	import { api } from '$lib';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import tokenManager from '$lib/tokenManager.ts';
 
-	onMount(() => {
-		api.setToken(new URLSearchParams(window.location.hash.replace('#', '')).get('access_token'));
+	onMount(async () => {
+		const code = new URLSearchParams(window.location.search).get('code')
+		await tokenManager.fetchRefreshToken(code)
 		goto('/discover');
 	});
 </script>

@@ -6,6 +6,7 @@ export type AudioFeatures = {
 	liveness: number;
 	loudness: number;
 	speechiness: number;
+	tempo: number;
 	valence: number;
 }
 

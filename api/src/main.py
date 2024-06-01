@@ -20,7 +20,7 @@ CORS(app)
 
 @app.before_request
 def get_token():
-    g.token = request.headers.get('token')
+    g.access_token = request.headers.get('token')
 
 
 @app.after_request
@@ -28,6 +28,18 @@ def camelize_response(response):
     if response.is_json:
         response.set_data(jsonify(humps.camelize(response.get_json())).get_data())
     return response
+
+
+@inject
+@app.route('/token')
+def __token(spotify: Spotify):
+    return jsonify(spotify.get_refresh_token(request.args['code'], request.args['redirectUri']))
+
+
+@inject
+@app.route('/token/refresh')
+def __token_refresh(spotify: Spotify):
+    return jsonify(spotify.refresh_access_token(request.args['refreshToken']))
 
 
 @inject

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { api } from '$lib';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import tokenManager from '$lib/tokenManager';
 
 	onMount(() => {
-		api.clearToken()
+		tokenManager.clear()
 		goto('/')
 	})
 </script>

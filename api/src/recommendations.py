@@ -22,6 +22,8 @@ class RecommendationsService:
     def get_recommendations(self, seed_tracks: List[Track]) -> List[Track]:
         if not seed_tracks:
             return []
+        shuffle(seed_tracks)
+        seed_tracks = seed_tracks[:500]
         seed_features = list(self.__spotify.get_audio_features(seed_tracks).values())
         mean_features = AudioFeatures(**{
             feature.name: sum([getattr(x, feature.name) for x in seed_features]) / len(seed_features)

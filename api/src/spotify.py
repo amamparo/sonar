@@ -1,3 +1,5 @@
+import base64
+import urllib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from random import shuffle
 from urllib import parse
@@ -7,12 +9,42 @@ import requests
 from flask import g
 from injector import singleton
 
+from src.env import Environment
 from src.models import Track, AudioFeatures, Artist, Playlist
 from src.spotify_unauthorized import SpotifyUnauthorized
 
 
 @singleton
 class Spotify:
+    @staticmethod
+    def get_refresh_token(code: str, redirect_uri: str) -> dict:
+        return Spotify.__token_request({
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': urllib.parse.unquote(redirect_uri)
+        })
+
+    @staticmethod
+    def refresh_access_token(refresh_token: str) -> dict:
+        return Spotify.__token_request({
+            'grant_type': 'refresh_token',
+            'refresh_token': refresh_token
+        })
+
+    @staticmethod
+    def __token_request(data: dict) -> dict:
+        authorization = f'Basic {base64.b64encode(
+            Environment.spotify_client_id.encode() + b':' + Environment.spotify_client_secret.encode()
+        ).decode('utf-8')}'
+        return requests.post(
+            'https://accounts.spotify.com/api/token',
+            data=data,
+            headers={
+                'Authorization': authorization,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        ).json()
+
     def search_playlists(self, query: str) -> List[Playlist]:
         playlists = (self.__get('/v1/search', {'q': query, 'type': 'playlist', 'limit': 50})
                      .get('playlists', {})
@@ -68,7 +100,7 @@ class Spotify:
     def get_audio_features(self, tracks: List[Track]) -> Dict[str, AudioFeatures]:
         batches = [tracks[i:i + 100] for i in range(0, len(tracks), 100)]
         result = {}
-        token = self.__get_token()
+        token = self.__get_access_token()
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [executor.submit(self.__get_audio_features, batch, token) for batch in batches]
             for future in as_completed(futures):
@@ -85,6 +117,7 @@ class Spotify:
                 liveness=x['liveness'],
                 loudness=x['loudness'],
                 speechiness=x['speechiness'],
+                tempo=x['tempo'],
                 valence=x['valence']
             )
             for x in self.__get(
@@ -99,7 +132,7 @@ class Spotify:
                             batch_size: int = 5) -> List[Track]:
         shuffle(seed_tracks)
         batches = [seed_tracks[i:i + batch_size] for i in range(0, len(seed_tracks), batch_size)]
-        token = self.__get_token()
+        token = self.__get_access_token()
         recommendations = []
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [executor.submit(self.__get_recommendations, batch, target_features, token) for batch in batches]
@@ -137,7 +170,7 @@ class Spotify:
     @staticmethod
     def __get_full(url: str, token: str = None) -> dict:
         if not token:
-            token = Spotify.__get_token()
+            token = Spotify.__get_access_token()
         response = requests.get(
             url,
             headers={
@@ -153,5 +186,5 @@ class Spotify:
         return response.json()
 
     @staticmethod
-    def __get_token() -> str:
-        return g.get("token")
+    def __get_access_token() -> str:
+        return g.get("access_token")

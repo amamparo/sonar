@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { api } from '$lib';
 	import Playlist from './playlist/Playlist.svelte';
 	import { goto } from '$app/navigation';
 	import Logout from '$lib/components/icon/Logout.svelte';
 	import Recommendations from './recommendations/Recommendations.svelte';
+	import tokenManager from '$lib/tokenManager';
 
 	onMount(() => {
-		if (!api.hasToken()) {
+		if (!tokenManager.hasAccessToken()) {
 			window.location.href = '/login';
 		}
 	});

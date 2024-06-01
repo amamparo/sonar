@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { api } from '$lib';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import tokenManager from '$lib/tokenManager';
 
 	let checkingToken = true;
 
 	onMount(() => {
-		if (api.hasToken()) {
+		if (tokenManager.hasAccessToken()) {
 			goto('/discover');
 		}
 		checkingToken = false;

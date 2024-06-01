@@ -1,7 +1,6 @@
 # TODO
 
 ## Must do before release
-* use authorization code flow instead of implicit grant, so that sessions last longer
 * export playlist
 * think of a better name + logo/favicon
 * landing page w/ screenshots (with good SEO practices)

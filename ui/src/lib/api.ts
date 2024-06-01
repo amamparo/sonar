@@ -1,8 +1,9 @@
 import type { Playlist, Track } from './models';
+import tokenManager from '$lib/tokenManager';
+
+export const redirectUri = `${import.meta.env.VITE_SPOTIFY_REDIRECT_URI_BASE_URL}/login/callback`
 
 class Api {
-	private static readonly SPOTIFY_TOKEN = 'spotify_token';
-
 	async searchPlaylists(query: string): Promise<Playlist[]> {
 		const response = await this.get(`/search/playlists/${query}`);
 		return response || [];
@@ -23,23 +24,27 @@ class Api {
 	}
 
 	private async post(path: string, data: any, signal?: AbortSignal) {
-		return this.request('POST', path, data, signal);
+		return this.request({method: 'POST', path, data, signal});
 	}
 
-	private async get(path: string) {
-		return this.request('GET', path);
+	private async get(path: string, params?: object) {
+		return this.request({method: 'GET', path, params});
 	}
 
-	private async request(method: string, path: string, data?: any, signal?: AportSignal) {
-		const url = `${import.meta.env.VITE_API_BASE_URL}${path}`;
+	private async request(props: { method: string, path: string, data?: any, params?: object, signal?: AportSignal }) {
+		const { method, path, data, params, signal } = props;
+		const url = `${import.meta.env.VITE_API_BASE_URL}${path}${params ? '?' + new URLSearchParams(params).toString() : ''}`;
 		const fetchOptions: RequestInit = {
 			method,
 			headers: {
-				token: this.getToken() || ''
+				'Content-Type': 'application/json'
 			}
 		};
+		const token = await tokenManager.getAccessToken()
+		if (token) {
+			fetchOptions.headers!['token'] = token
+		}
 		if (data) {
-			fetchOptions.headers!['Content-Type'] = 'application/json';
 			fetchOptions.body = JSON.stringify(data);
 		}
 		if (signal) {
@@ -52,22 +57,6 @@ class Api {
 			return null;
 		}
 		return response.json();
-	}
-
-	setToken(token: string) {
-		localStorage.setItem(Api.SPOTIFY_TOKEN, token);
-	}
-
-	clearToken() {
-		localStorage.removeItem(Api.SPOTIFY_TOKEN);
-	}
-
-	hasToken(): boolean {
-		return this.getToken() !== null;
-	}
-
-	private getToken(): string | null {
-		return localStorage.getItem(Api.SPOTIFY_TOKEN);
 	}
 }
 
