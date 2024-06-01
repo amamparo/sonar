@@ -251,7 +251,7 @@
 				Add {selectedTracks.length} Track{selectedTracks.length > 1 ? 's' : ''}
 			</Button>
 			<Button onClick={selectedTrackStore.clear} class="hover:border-red-600 hover:text-red-600">
-				Clear Selections
+				Clear Selection
 			</Button>
 		{:else}
 			<span class="text-muted font-circular-book">Click on recommendations to queue them for your playlist.</span>

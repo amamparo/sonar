@@ -59,7 +59,7 @@
 	{#if searchResults.length}
 		<div class="results mt-2 max-h-[75vh] overflow-y-auto overflow-x-hidden" bind:this={scrollable}>
 			{#each searchResults as { author, id, imageUrl, title }}
-				<div class="flex items-center p-1.5 rounded hover:bg-highlight hover:cursor-pointer"
+				<div class="flex items-center p-2.5 rounded hover:bg-highlight hover:cursor-pointer"
 						 on:click={onClick(id)}>
 					<img class="w-12 h-12 flex-none rounded" src={imageUrl} alt={title} />
 					<div class="flex flex-col flex-1 ms-2 overflow-hidden">

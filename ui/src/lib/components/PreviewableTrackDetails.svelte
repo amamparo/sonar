@@ -4,13 +4,16 @@
 	import Stop from '$lib/components/icon/Stop.svelte';
 	import { onDestroy } from 'svelte';
 
+	export let sourcePrefix = '';
 	export let track;
 	export let shouldShowPlay = false;
+
+	$: sourceKey = `${sourcePrefix}-${track.id}`;
 
 	let isPreviewPlaying = false;
 	let previewDuration = 0;
 	previewPlayer.subscribe(state => {
-		isPreviewPlaying = state.currentTrackId === track.id;
+		isPreviewPlaying = state.currentSourceKey && state.currentSourceKey === sourceKey;
 		previewDuration = state.currentDuration;
 	});
 
@@ -25,7 +28,7 @@
 	<img src={track.imageUrl} class="absolute" />
 	{#if track.previewUrl && (shouldShowPlay || isPreviewPlaying)}
 		<div class="relative h-full w-full rounded absolute z-20"
-				 on:click={() => previewPlayer.toggle(track)}>
+				 on:click={() => previewPlayer.toggle(track, sourceKey)}>
 			<div class="absolute bg-background inset-0 z-30 opacity-70"></div>
 			{#if isPreviewPlaying && previewDuration}
 				<div class="absolute preview-progress bg-spotify-green inset-0 z-40 opacity-50"
@@ -40,6 +43,12 @@
 			</div>
 		</div>
 	{/if}
+</div>
+<div class="flex flex-col flex-1 ms-3 overflow-hidden">
+	<div class="text-base truncate {isPreviewPlaying ? 'text-spotify-green'  : 'text-primary'}">
+		{track.title}
+	</div>
+	<div class="text-sm text-secondary truncate">{track.artist}</div>
 </div>
 
 <style>
