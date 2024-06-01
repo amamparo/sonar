@@ -5,7 +5,6 @@
 </script>
 
 <script lang="ts">
-	import selectedTrackStore from './selectedTrackStore';
 	import Button from '$lib/components/Button.svelte';
 	import { trackStore } from '$lib';
 	import AxisSelect from './AxisSelect.svelte';
@@ -46,14 +45,14 @@
 
 	let selectedDataPointIndexes = [];
 
-	selectedTrackStore.subscribe(tracks => {
-		if (tracks.length === 0) {
-			const copy = [...selectedDataPointIndexes];
-			for (const index of copy) {
-				myChart.toggleDataPointSelection(0, index);
-			}
+	let selectedTracks = [];
+
+	$: if (selectedTracks.length === 0) {
+		const copy = [...selectedDataPointIndexes];
+		for (const index of copy) {
+			myChart.toggleDataPointSelection(0, index);
 		}
-	});
+	}
 
 	let myChart;
 	const chart = (node, options) => {
@@ -117,9 +116,7 @@
 				},
 				dataPointSelection: (event, chartContext, config) => {
 					selectedDataPointIndexes = config.selectedDataPoints[0];
-					selectedTrackStore.setAll(
-						selectedDataPointIndexes.map((index) => recommendations[index])
-					);
+					selectedTracks = selectedDataPointIndexes.map((index) => recommendations[index])
 				},
 				mounted: () => {
 					myChart.updateOptions({
@@ -128,7 +125,7 @@
 						}
 					});
 				},
-				zoomed: (chartContext, {xaxis, yaxis}) => {
+				zoomed: (chartContext, { xaxis, yaxis }) => {
 					isZoomed = true;
 				}
 			}
@@ -187,7 +184,7 @@
 						<div class="flex flex-col flex-1 ms-3 overflow-hidden">
 							<div class="text-base text-primary truncate">${track.title}</div>
 							<div class="text-sm text-secondary truncate">
-								${track.artists.map(x => x.name).join(", ")}
+								${track.artists.map(x => x.name).join(', ')}
 							</div>
 						</div>
 					</div>
@@ -213,20 +210,15 @@
 		}];
 	}
 
-	let selectedTracks = [];
-	selectedTrackStore.subscribe(tracks => {
-		selectedTracks = tracks;
-	});
-
 	const addSelections = () => {
 		trackStore.addAll(selectedTracks);
-		selectedTrackStore.clear();
+		selectedTracks = [];
 	};
 
 	const resetZoom = () => {
 		myChart.resetSeries();
 		isZoomed = false;
-	}
+	};
 
 	$: if (xAxisFeature && yAxisFeature) {
 		resetZoom();
@@ -239,7 +231,7 @@
 		<AxisSelect axis="Y" bind:featureValue={yAxisFeature} bind:otherFeatureValue={xAxisFeature} />
 		{#if isZoomed}
 			<Button class="text-sm text-secondary hover:text-primary hover:border-primary"
-			onClick={resetZoom}>
+							onClick={resetZoom}>
 				Reset Zoom
 			</Button>
 		{/if}
@@ -252,7 +244,7 @@
 			<Button onClick={addSelections} class="hover:border-spotify-green hover:text-spotify-green">
 				Add {selectedTracks.length} Track{selectedTracks.length > 1 ? 's' : ''}
 			</Button>
-			<Button onClick={selectedTrackStore.clear} class="hover:border-red-600 hover:text-red-600">
+			<Button onClick={() => selectedTracks = []} class="hover:border-red-600 hover:text-red-600">
 				Clear Selection
 			</Button>
 		{:else}

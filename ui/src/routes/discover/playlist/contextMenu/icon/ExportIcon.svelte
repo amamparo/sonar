@@ -1,4 +1,9 @@
-<svg viewBox="0 0 16 16">
+<script lang="ts">
+	let className: string | undefined | null = undefined;
+	export { className as class };
+</script>
+
+<svg viewBox="0 0 16 16" class={className}>
 	<path
 		d="M1 5.75A.75.75 0 0 1 1.75 5H4v1.5H2.5v8h11v-8H12V5h2.25a.75.75 0 0 1 .75.75v9.5a.75.75 0 0 1-.75.75H1.75a.75.75 0 0 1-.75-.75v-9.5z"></path>
 	<path

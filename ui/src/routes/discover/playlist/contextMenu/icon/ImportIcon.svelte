@@ -1,4 +1,4 @@
-<svg viewBox="0 0 17 17">
+<svg viewBox="0 0 17 17" class="fill-secondary">
 	<path transform="scale(1.1) translate(0 -1.5)"
 		d="M1 5.75A.75.75 0 0 1 1.75 5H4v1.5H2.5v8h11v-8H12V5h2.25a.75.75 0 0 1 .75.75v9.5a.75.75 0 0 1-.75.75H1.75a.75.75 0 0 1-.75-.75v-9.5z"></path>
 	<path transform="rotate(180 8 8) translate(-1 4.5)"

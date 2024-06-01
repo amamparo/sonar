@@ -40,8 +40,9 @@
 </script>
 
 <div class="relative">
-	<button class="ellipsis rounded-lg p-2" bind:this={button} on:click={toggleMenu}>
-		<Ellipsis />
+	<button class="ellipsis rounded-lg p-2 fill-secondary hover:fill-primary" bind:this={button}
+					on:click={toggleMenu}>
+		<Ellipsis/>
 	</button>
 	{#if showMenu}
 		<div class="absolute right-0 mt-2
@@ -69,16 +70,11 @@
   button.ellipsis {
     &:hover {
       cursor: pointer;
-
-      :global(svg) {
-        fill: var(--text-primary);
-      }
     }
   }
 
   button :global(svg) {
     width: 16px;
     height: 16px;
-    fill: var(--text-secondary);
   }
 </style>
