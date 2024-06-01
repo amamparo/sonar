@@ -5,58 +5,21 @@ class Api {
 
 	async searchPlaylists(query: string): Promise<Playlist[]> {
 		const response = await this.get(`/search/playlists/${query}`);
-		if (!response) {
-			return [];
-		}
-		return response.map((item: object) => ({
-			id: item.id,
-			title: item.title,
-			author: item.author,
-			imageUrl: item.image_url
-		}));
+		return response || [];
 	}
 
 	async getPlaylistTracks(playlistId: string): Promise<Track[]> {
 		const response = await this.get(`/playlist/${playlistId}/tracks`);
-		if (!response) {
-			return [];
-		}
-		return response.map((item: object) => ({
-			id: item.id,
-			title: item.title,
-			artist: item.artist,
-			album: item.album,
-			previewUrl: item.preview_url,
-			imageUrl: item.image_url
-		}));
+		return response || [];
 	}
 
 	async searchTracks(query: string): Promise<Track[]> {
 		const response = await this.get(`/search/tracks/${query}`);
-		if (!response) {
-			return [];
-		}
-		return response.map((item: object) => ({
-			id: item.id,
-			title: item.title,
-			artist: item.artist,
-			album: item.album,
-			previewUrl: item.preview_url,
-			imageUrl: item.image_url
-		}));
+		return response || [];
 	}
 
 	async getRecommendations(tracks: Track[], signal: AbortSignal): Promise<Track[]> {
-		const response = await this.post('/recommendations', tracks, signal);
-		return response.map((item: object) => ({
-			id: item.id,
-			title: item.title,
-			artist: item.artist,
-			album: item.album,
-			previewUrl: item.preview_url,
-			imageUrl: item.image_url,
-			features: item.features
-		}));
+		return this.post('/recommendations', tracks, signal);
 	}
 
 	private async post(path: string, data: any, signal?: AbortSignal) {

@@ -21,6 +21,11 @@ CORS(app)
 def get_token():
     g.token = request.headers.get('token')
 
+@app.after_request
+def camelize_response(response):
+    if response.is_json:
+        response.set_data(jsonify(humps.camelize(response.get_json())).get_data())
+    return response
 
 @inject
 @app.route('/search/playlists/<path:query>')
