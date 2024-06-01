@@ -5,9 +5,6 @@
 
 	import _ from 'lodash';
 	import { api, type Track, trackStore } from '$lib';
-	import TrashIcon from '$lib/components/icon/Trash.svelte';
-	import Check from '$lib/components/icon/Check.svelte';
-	import Plus from '$lib/components/icon/Plus.svelte';
 	import AddSongsSearchResult from './AddSongsSearchResult.svelte';
 
 	let searchQuery = '';
