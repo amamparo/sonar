@@ -1,6 +1,7 @@
 import base64
 import urllib
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from math import ceil, floor
 from random import shuffle
 from urllib import parse
 from typing import List, Dict
@@ -129,9 +130,16 @@ class Spotify:
         }
 
     def get_recommendations(self, seed_tracks: List[Track], target_features: AudioFeatures,
-                            batch_size: int = 5) -> List[Track]:
+                            max_batch_size: int = 5) -> List[Track]:
         shuffle(seed_tracks)
+        batch_count = ceil(len(seed_tracks) / max_batch_size)
+        batch_size = floor(len(seed_tracks) / batch_count)
         batches = [seed_tracks[i:i + batch_size] for i in range(0, len(seed_tracks), batch_size)]
+        incomplete_batch = next((x for x in batches if len(x) < batch_size), None)
+        if incomplete_batch:
+            batches.remove(incomplete_batch)
+            for i, x in enumerate(incomplete_batch):
+                batches[i].append(x)
         token = self.__get_access_token()
         recommendations = []
         with ThreadPoolExecutor(max_workers=10) as executor:
