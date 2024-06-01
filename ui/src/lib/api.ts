@@ -1,4 +1,4 @@
-import type { Playlist, Recommendations, Track } from './models';
+import type { Playlist, Track } from './models';
 
 class Api {
 	private static readonly SPOTIFY_TOKEN = 'spotify_token';
@@ -46,38 +46,35 @@ class Api {
 		}));
 	}
 
-	async getRecommendations(tracks: Track[]): Promise<Recommendations> {
-		const response = await this.post('/recommendations', tracks.map(track => track.id));
-		return {
-			inputAverageFeatures: response.input_average_features,
-			recommendations: response.recommendations.map((item: object) => ({
-				id: item.id,
-				title: item.title,
-				artist: item.artist,
-				album: item.album,
-				previewUrl: item.preview_url,
-				imageUrl: item.image_url,
-				features: item.features
-			}))
-		};
-
+	async getRecommendations(tracks: Track[], signal: AbortSignal): Promise<Track[]> {
+		const response = await this.post('/recommendations', tracks.map(track => track.id), signal);
+		return response.map((item: object) => ({
+			id: item.id,
+			title: item.title,
+			artist: item.artist,
+			album: item.album,
+			previewUrl: item.preview_url,
+			imageUrl: item.image_url,
+			features: item.features
+		}));
 	}
 
-	private async post(path: string, data: any) {
-		return this.request('POST', path, data);
+	private async post(path: string, data: any, signal?: AbortSignal) {
+		return this.request('POST', path, data, signal);
 	}
 
 	private async get(path: string) {
 		return this.request('GET', path);
 	}
 
-	private async request(method: string, path: string, data?: any) {
+	private async request(method: string, path: string, data?: any, signal?: AportSignal) {
 		const url = `${import.meta.env.VITE_API_BASE_URL}${path}`;
 		const fetchOptions: RequestInit = {
 			method,
 			headers: {
 				token: this.getToken() || ''
-			}
+			},
+			signal
 		};
 		if (data) {
 			fetchOptions.headers!['Content-Type'] = 'application/json';

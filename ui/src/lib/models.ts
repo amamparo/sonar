@@ -18,11 +18,6 @@ export type Track = {
 	features?: AudioFeatures;
 };
 
-export type Recommendations = {
-	inputAverageFeatures: AudioFeatures;
-	recommendations: Track[];
-}
-
 export type Playlist = {
 	id: string;
 	title: string;

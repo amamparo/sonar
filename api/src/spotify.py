@@ -77,7 +77,7 @@ class Spotify:
                     speechiness=x['speechiness'],
                     valence=x['valence']
                 )
-                for x in self.__get('/v1/audio-features', {'ids': ','.join(batch_ids)}).get('audio_features', [])
+                for x in self.__get('/v1/audio-features', {'ids': ','.join(batch_ids)}).get('audio_features', []) if x
             })
         return result
 

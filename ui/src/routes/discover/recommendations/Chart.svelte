@@ -87,7 +87,7 @@
 			},
 			events: {
 				dataPointMouseEnter: (event, chartContext, config) => {
-					const track = recommendations.recommendations[config.dataPointIndex];
+					const track = recommendations[config.dataPointIndex];
 					if (hoveredTrack == null || track.id !== hoveredTrack.id) {
 						hoveredTrack = track;
 					}
@@ -98,7 +98,7 @@
 				dataPointSelection: (event, chartContext, config) => {
 					selectedDataPointIndexes = config.selectedDataPoints[0];
 					selectedTrackStore.setAll(
-						selectedDataPointIndexes.map((index) => recommendations.recommendations[index])
+						selectedDataPointIndexes.map((index) => recommendations[index])
 					);
 				},
 				mounted: () => {
@@ -155,7 +155,7 @@
 			},
 			theme: 'dark',
 			custom: ({ dataPointIndex: recommendationIndex }) => {
-				const track = recommendations.recommendations[recommendationIndex];
+				const track = recommendations[recommendationIndex];
 				return `
 					<div class="flex items-center p-2.5 bg-foreground max-w-96">
 						<div class="relative w-12 h-12 flex-none rounded overflow-hidden">
@@ -172,7 +172,7 @@
 	};
 
 	$: options.series = [{
-		data: recommendations?.recommendations.map((track) => ({
+		data: recommendations?.map((track) => ({
 			x: track.features.energy,
 			y: track.features.valence
 		}))
@@ -194,8 +194,8 @@
         opacity: 0.7;
 
         &[selected="true"] {
-          fill: royalblue;
-          stroke: royalblue;
+          fill: dodgerblue;
+          stroke: dodgerblue;
         }
       }
 
