@@ -4,14 +4,20 @@ export type AudioFeatures = {
 	energy: number;
 	instrumentalness: number;
 	liveness: number;
+	loudness: number;
 	speechiness: number;
 	valence: number;
+}
+
+export type Artist = {
+	id: string;
+	name: string;
 }
 
 export type Track = {
 	id: string;
 	title: string;
-	artist: string;
+	artists: Artist[];
 	album: string;
 	imageUrl: string;
 	previewUrl: string;

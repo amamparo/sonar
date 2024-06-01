@@ -157,9 +157,9 @@
 			show: false
 		},
 		markers: {
-			size: 7,
+			size: 8,
 			hover: {
-				sizeOffset: 4
+				sizeOffset: 3
 			},
 			strokeWidth: 1
 		},
@@ -186,7 +186,9 @@
 						</div>
 						<div class="flex flex-col flex-1 ms-3 overflow-hidden">
 							<div class="text-base text-primary truncate">${track.title}</div>
-							<div class="text-sm text-secondary truncate">${track.artist}</div>
+							<div class="text-sm text-secondary truncate">
+								${track.artists.map(x => x.name).join(", ")}
+							</div>
 						</div>
 					</div>
 				`;

@@ -3,7 +3,7 @@
 	import Check from '$lib/components/icon/Check.svelte';
 	import Plus from '$lib/components/icon/Plus.svelte';
 	import Trash from '$lib/components/icon/Trash.svelte';
-	import PlayableTrackArt from '$lib/components/PreviewableTrackDetails.svelte';
+	import PreviewableTrackDetails from '$lib/components/PreviewableTrackDetails.svelte';
 
 	export let track: Track;
 
@@ -48,7 +48,7 @@
 
 <div class="flex items-center p-2.5 pr-0 rounded hover:bg-highlight"
 		 on:pointerenter={hover(true)} on:pointerleave={hover(false)}>
-	<PlayableTrackArt {track} shouldShowPlay={isHovered} sourcePrefix="track-search"/>
+	<PreviewableTrackDetails {track} shouldShowPlay={isHovered} sourcePrefix="track-search"/>
 	{#if icon}
 		<div class="w-10 h-10 p-3 hover:cursor-pointer {iconFillClass}"
 				 on:click={onIconClick} on:pointerenter={hoverIcon(true)}

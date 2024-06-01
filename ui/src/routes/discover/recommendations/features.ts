@@ -4,6 +4,7 @@ export default [
 	'energy',
 	'instrumentalness',
 	'liveness',
+	'loudness',
 	'speechiness',
 	'valence'
 ];

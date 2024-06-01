@@ -7,15 +7,18 @@
 	export let sourcePrefix = '';
 	export let track;
 	export let shouldShowPlay = false;
+	export let isPreviewPlaying = false;
 
 	$: sourceKey = `${sourcePrefix}-${track.id}`;
 
-	let isPreviewPlaying = false;
+	let currentlyPlayingSourceKey = null;
 	let previewDuration = 0;
 	previewPlayer.subscribe(state => {
-		isPreviewPlaying = state.currentSourceKey && state.currentSourceKey === sourceKey;
+		currentlyPlayingSourceKey = state.currentSourceKey;
 		previewDuration = state.currentDuration;
 	});
+
+	$: isPreviewPlaying = currentlyPlayingSourceKey && currentlyPlayingSourceKey === sourceKey;
 
 	onDestroy(() => {
 		if (isPreviewPlaying) {
@@ -48,7 +51,7 @@
 	<div class="text-base truncate {isPreviewPlaying ? 'text-spotify-green'  : 'text-primary'}">
 		{track.title}
 	</div>
-	<div class="text-sm text-secondary truncate">{track.artist}</div>
+	<div class="text-sm text-secondary truncate">{track.artists.map(x => x.name).join(", ")}</div>
 </div>
 
 <style>

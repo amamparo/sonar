@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from random import shuffle
 from typing import List
 
 from injector import singleton, inject
 
-from src.models import Track
+from src.models import Track, AudioFeatures
 from src.spotify import Spotify
 
 
@@ -20,23 +20,24 @@ class RecommendationsService:
         self.__spotify = spotify
 
     def get_recommendations(self, seed_tracks: List[Track]) -> List[Track]:
-        recommended_tracks = self.__get_recommended_tracks([x.id for x in seed_tracks])
-        features = self.__spotify.get_audio_features([t.id for t in recommended_tracks])
+        if not seed_tracks:
+            return []
+        seed_features = list(self.__spotify.get_audio_features(seed_tracks).values())
+        mean_features = AudioFeatures(**{
+            feature.name: sum([getattr(x, feature.name) for x in seed_features]) / len(seed_features)
+            for feature in fields(AudioFeatures)
+        })
+        recommended_tracks = self.__get_recommended_tracks(seed_tracks, mean_features)
+        results = []
+        features = self.__spotify.get_audio_features(recommended_tracks)
         for track in recommended_tracks:
             track.features = features.get(track.id)
-        return [t for t in recommended_tracks if t.features]
+            if track.features:
+                results.append(track)
 
-    def __get_recommended_tracks(self, track_ids: List[str]) -> List[Track]:
-        shuffle(track_ids)
-        batches = [track_ids[i:i + 5] for i in range(0, len(track_ids), 5)]
-        results = set()
-        for batch_ids in batches:
-            recommended_tracks = self.__spotify.get_recommendations(batch_ids)
-            for track in recommended_tracks:
-                if track.id in track_ids or not track.preview_url:
-                    continue
-                results.add(track)
-                if len(results) == 100:
-                    return list(results)
-        return list(results)
+        return sorted(results, key=lambda x: x.features.cosine_similarity(mean_features), reverse=True)[:250]
 
+    def __get_recommended_tracks(self, seed_tracks: List[Track], target_features: AudioFeatures) -> List[Track]:
+        shuffle(seed_tracks)
+        recommendations = self.__spotify.get_recommendations(seed_tracks, target_features)
+        return recommendations

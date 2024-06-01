@@ -7,6 +7,7 @@ from flask import Flask, Response, jsonify, request, g
 from flask_cors import CORS
 from flask_injector import FlaskInjector
 from injector import inject
+from dacite import from_dict
 
 from src.models import Track
 from src.recommendations import RecommendationsService
@@ -21,11 +22,13 @@ CORS(app)
 def get_token():
     g.token = request.headers.get('token')
 
+
 @app.after_request
 def camelize_response(response):
     if response.is_json:
         response.set_data(jsonify(humps.camelize(response.get_json())).get_data())
     return response
+
 
 @inject
 @app.route('/search/playlists/<path:query>')
@@ -48,7 +51,9 @@ def __playlist_tracks(spotify: Spotify, playlist_id: str):
 @inject
 @app.route('/recommendations', methods=['POST'])
 def __recommendations(recommendations: RecommendationsService):
-    return jsonify(recommendations.get_recommendations([Track(**humps.decamelize(x)) for x in request.get_json()]))
+    return jsonify(recommendations.get_recommendations([
+        from_dict(data_class=Track, data=humps.decamelize(x)) for x in request.get_json()
+    ]))
 
 
 @inject
