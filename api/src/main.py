@@ -63,9 +63,7 @@ def __playlist_tracks(spotify: Spotify, playlist_id: str):
 @inject
 @app.route('/recommendations', methods=['POST'])
 def __recommendations(recommendations: RecommendationsService):
-    return jsonify(recommendations.get_recommendations([
-        from_dict(data_class=Track, data=humps.decamelize(x)) for x in request.get_json()
-    ]))
+    return jsonify(recommendations.get_recommendations(request.get_json()))
 
 
 @inject

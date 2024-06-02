@@ -19,14 +19,8 @@ class RecommendationsService:
     def __init__(self, spotify: Spotify):
         self.__spotify = spotify
 
-    def get_recommendations(self, seed_tracks: List[Track]) -> List[Track]:
-        if not seed_tracks:
+    def get_recommendations(self, seed_track_ids: List[str]) -> List[Track]:
+        if not seed_track_ids:
             return []
-        shuffle(seed_tracks)
-        seed_tracks = seed_tracks[:500]
-        seed_features = list(self.__spotify.get_audio_features(seed_tracks).values())
-        mean_features = AudioFeatures(**{
-            feature.name: sum([getattr(x, feature.name) for x in seed_features]) / len(seed_features)
-            for feature in fields(AudioFeatures)
-        })
-        return self.__spotify.get_recommendations(seed_tracks, mean_features)[:100]
+        shuffle(seed_track_ids)
+        return self.__spotify.get_recommendations(seed_track_ids[:500])[:100]

@@ -129,46 +129,38 @@ class Spotify:
             if x
         }
 
-    def get_recommendations(self, seed_tracks: List[Track], target_features: AudioFeatures,
-                            max_batch_size: int = 5) -> List[Track]:
-        shuffle(seed_tracks)
-        batch_count = ceil(len(seed_tracks) / max_batch_size)
-        batch_size = floor(len(seed_tracks) / batch_count)
-        batches = [seed_tracks[i:i + batch_size] for i in range(0, len(seed_tracks), batch_size)]
+    def get_recommendations(self, seed_track_ids: List[str]) -> List[Track]:
+        shuffle(seed_track_ids)
+        batch_count = ceil(len(seed_track_ids) / 5)
+        batch_size = floor(len(seed_track_ids) / batch_count)
+        batches = [seed_track_ids[i:i + batch_size] for i in range(0, len(seed_track_ids), batch_size)]
         incomplete_batch = next((x for x in batches if len(x) < batch_size), None)
         if incomplete_batch:
             batches.remove(incomplete_batch)
             for i, x in enumerate(incomplete_batch):
                 batches[i].append(x)
         token = self.__get_access_token()
-        recommendations = []
+        recommendation_scores: Dict[Track, int] = {}
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(self.__get_recommendations, batch, target_features, token) for batch in batches]
+            futures = [executor.submit(self.__get_recommendations, batch, token) for batch in batches]
             for future in as_completed(futures):
-                recommendations.extend(future.result())
-        recommendations = [x for x in recommendations if x not in seed_tracks and x.preview_url]
-        features = self.get_audio_features(list(set(recommendations)))
-        recommendation_counts: Dict[Track, int] = {}
+                for i, recommendation in enumerate(future.result()):
+                    recommendation_scores[recommendation] = recommendation_scores.get(recommendation, 0) + (100 - i)
+        recommendations = [
+            x[0] for x in sorted(list(recommendation_scores.items()), key=lambda t: t[1], reverse=True)
+            if x[0].id not in seed_track_ids and x[0].preview_url
+        ]
+        features = self.get_audio_features(recommendations)
         for recommendation in recommendations:
             recommendation.features = features.get(recommendation.id)
-            if not recommendation:
-                continue
-            recommendation_counts[recommendation] = recommendation_counts.get(recommendation, 0) + 1
+        return [x for x in recommendations if x.features]
 
-        return [x[0] for x in sorted(
-            recommendation_counts.items(),
-            key=lambda t: (t[1], t[0].features.cosine_similarity(target_features)),
-            reverse=True
-        )][:100]
-
-    def __get_recommendations(self, seed_tracks: List[Track], target_features: AudioFeatures,
-                              token: str) -> List[Track]:
+    def __get_recommendations(self, seed_track_ids: List[str], token: str) -> List[Track]:
         response = self.__get(
             '/v1/recommendations',
             {
-                'seed_tracks': ','.join([x.id for x in seed_tracks]),
-                'limit': 100,
-                **{f'target_{k}': v for k, v in target_features.__dict__.items() if v}
+                'seed_tracks': ','.join(seed_track_ids),
+                'limit': 100
             },
             token
         )

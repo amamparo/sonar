@@ -19,8 +19,8 @@ class Api {
 		return response || [];
 	}
 
-	async getRecommendations(tracks: Track[], signal: AbortSignal): Promise<Track[]> {
-		return this.post('/recommendations', tracks, signal);
+	async getRecommendations(track_ids: string[], signal: AbortSignal): Promise<Track[]> {
+		return this.post('/recommendations', track_ids, signal);
 	}
 
 	private async post(path: string, data: any, signal?: AbortSignal) {

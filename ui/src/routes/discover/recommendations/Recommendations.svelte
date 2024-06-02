@@ -21,7 +21,7 @@
 		}
 		abortController = new AbortController();
 		isLoading = true;
-		recommendations = await api.getRecommendations(tracks, abortController.signal);
+		recommendations = await api.getRecommendations(tracks.map(t => t.id), abortController.signal);
 		isLoading = false;
 	}, 300);
 
