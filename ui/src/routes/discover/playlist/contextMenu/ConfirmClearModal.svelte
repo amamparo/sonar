@@ -32,7 +32,7 @@
 	<div class="relative bg-foreground flex items-center justify-center z-10 p-5 rounded">
 		<div class="flex flex-col">
 			<span class="text-light font-circular-book">
-				This will delete all tracks from the current playlist. Are you sure?
+				Are you sure you want to delete all tracks?
 			</span>
 			<div class="flex w-full mt-4 justify-end space-x-3">
 				<Button class="border-secondary text-secondary hover:border-primary hover:text-primary"
