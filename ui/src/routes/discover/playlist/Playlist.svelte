@@ -10,9 +10,9 @@
 
 	let tracks = [];
 	let isUpdating = false;
-	trackStore.subscribe(state => {
-		tracks = state.tracks;
-		isUpdating = state.isUpdating;
+	trackStore.subscribe(x => {
+		tracks = x.tracks;
+		isUpdating = x.isUpdating;
 	});
 
 	let subMenuToShow = null;

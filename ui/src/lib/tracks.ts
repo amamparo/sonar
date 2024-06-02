@@ -1,76 +1,39 @@
-import { type Subscriber, type Writable, writable } from 'svelte/store';
-import type { Track } from './models';
+import { writable } from 'svelte/store';
 
 const KEY = 'tracks';
 
-class State {
-	public isUpdating: boolean;
-	public tracks: Track[];
+const { subscribe, update } = writable({
+	isUpdating: false,
+	tracks: JSON.parse(localStorage.getItem(KEY) || '[]')
+})
 
-	constructor(tracks: Track[]) {
-		this.tracks = tracks;
-		this.isUpdating = false;
-	}
+const persist = x => {
+	localStorage.setItem(KEY, JSON.stringify(x.tracks));
+	x.isUpdating = false;
+	return x;
 }
 
-class TrackStore {
-	private state: State;
-	private readonly store: Writable<State>;
-
-	constructor() {
-		const stored = localStorage.getItem(KEY);
-		this.state = new State(stored ? JSON.parse(stored) : []);
-		this.store = writable(this.state);
-	}
-
-	public subscribe(run: Subscriber<State>) {
-		this.store.subscribe(run);
-	}
-
-	public setAll(tracks: Track[]) {
-		this.store.update(state => {
-			state.tracks = tracks;
-			return state;
-		});
-		this.save();
-	}
-
-	public delete(trackId: string) {
-		this.store.update(state => {
-			state.tracks = state.tracks.filter(track => track.id !== trackId);
-			return state;
-		});
-		this.save();
-	}
-
-	public add(track: Track) {
-		return this.addAll([track])
-	}
-
-	public addAll(tracks: Track[]) {
-		const newTracks = tracks.filter(track => !this.state.tracks.some(t => t.id === track.id));
-		this.store.update(state => {
-			state.tracks = [...state.tracks, ...newTracks];
-			return state;
-		});
-		this.save();
-	}
-
-	public clear() {
-		this.setAll([]);
-	}
-
-	public setUpdating(isUpdating: boolean) {
-		this.store.update(state => {
-			state.isUpdating = isUpdating;
-			return state;
-		});
-	}
-
-	private save() {
-		localStorage.setItem(KEY, JSON.stringify(this.state.tracks));
-		this.setUpdating(false);
-	}
-}
-
-export default new TrackStore();
+export default {
+	subscribe,
+	setAll: tracks => update(x => {
+		x.tracks = tracks;
+		return persist(x);
+	}),
+	delete: trackId => update(x => {
+		x.tracks = x.tracks.filter(t => t.id !== trackId);
+		return persist(x);
+	}),
+	clear: () => update(x => {
+		x.tracks = [];
+		return persist(x);
+	}),
+	addAll: tracks => update(x => {
+		const newTracks = tracks.filter(track => !x.tracks.some(t => t.id === track.id));
+		x.tracks = [...x.tracks, ...newTracks];
+		return persist(x);
+	}),
+	setUpdating: isUpdating => update(x => {
+		x.isUpdating = isUpdating;
+		return x;
+	})
+};
