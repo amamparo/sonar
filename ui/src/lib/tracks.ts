@@ -1,24 +1,32 @@
 import { type Subscriber, type Unsubscriber, type Updater, writable } from 'svelte/store';
 import type { Track } from '$lib/models';
+import api from '$lib/api';
 
-const KEY = 'tracks';
+const TRACK_IDS = 'track_ids';
 
-type TracksState = {
+type State = {
 	isUpdating: boolean,
 	tracks: Track[],
 }
 
 class Tracks {
-	public readonly subscribe: (subscriber: Subscriber<TracksState>) => Unsubscriber;
-	private readonly update: (updater: Updater<TracksState>) => void;
+	public readonly subscribe: (subscriber: Subscriber<State>) => Unsubscriber;
+	private readonly update: (updater: Updater<State>) => void;
 
 	constructor() {
-		const store = writable<TracksState>({
-			isUpdating: false,
-			tracks: JSON.parse(localStorage.getItem(KEY) || '[]')
+		const store = writable<State>({
+			isUpdating: true,
+			tracks: []
 		});
 		this.subscribe = store.subscribe;
 		this.update = store.update;
+
+		const trackIds = JSON.parse(localStorage.getItem(TRACK_IDS) || '[]')
+		api.getTracks(trackIds).then(tracks => store.update(x => {
+			x.tracks = tracks;
+			x.isUpdating = false;
+			return x;
+		}))
 	}
 
 	public setAll(tracks: Track[]): void {
@@ -58,8 +66,8 @@ class Tracks {
 		});
 	}
 
-	private persist<T>(x: T): T {
-		localStorage.setItem(KEY, JSON.stringify(x.tracks));
+	private persist(x: State): State {
+		localStorage.setItem(TRACK_IDS, JSON.stringify(x.tracks.map(t => t.id)));
 		x.isUpdating = false;
 		return x;
 	}

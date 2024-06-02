@@ -43,6 +43,12 @@ def __token_refresh(spotify: Spotify):
 
 
 @inject
+@app.route('/tracks', methods=['POST'])
+def __tracks(spotify: Spotify):
+    return jsonify(spotify.get_tracks(request.get_json()))
+
+
+@inject
 @app.route('/search/playlists/<path:query>')
 def __search_playlists(spotify: Spotify, query: str):
     return jsonify(spotify.search_playlists(query))

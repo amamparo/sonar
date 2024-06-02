@@ -4,6 +4,11 @@ import tokenManager from '$lib/tokenManager';
 export const redirectUri = `${import.meta.env.VITE_SPOTIFY_REDIRECT_URI_BASE_URL}/login/callback`
 
 class Api {
+	async getTracks(trackIds: string[]): Promise<Track[]> {
+		const response = await this.post('/tracks', trackIds)
+		return response || []
+	}
+
 	async searchPlaylists(query: string): Promise<Playlist[]> {
 		const response = await this.get(`/search/playlists/${query}`);
 		return response || [];
@@ -51,7 +56,7 @@ class Api {
 			fetchOptions.signal = signal;
 		}
 		const response = await fetch(url, fetchOptions);
-		if (response.status >= 400 && response.status <= 403) {
+		if (response.status > 400 && response.status <= 403) {
 			window.location.href = '/login';
 		} else if (response.status == 404) {
 			return null;

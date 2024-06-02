@@ -46,6 +46,24 @@ class Spotify:
             }
         ).json()
 
+    def get_tracks(self, track_ids: List[str]) -> List[Track]:
+        batch_size = 50
+        batches = [track_ids[i:i + batch_size] for i in range(0, len(track_ids), batch_size)]
+        track_map = {}
+        token = self.__get_access_token()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [executor.submit(self.__get_tracks, batch, token) for batch in batches]
+            for future in as_completed(futures):
+                track_map.update(future.result())
+        return [track_map[x] for x in track_ids if x in track_map]
+
+    def __get_tracks(self, track_ids: List[str], token: str) -> Dict[str, Track]:
+        as_list = [
+            self.__to_track(x) for x in
+            self.__get('/v1/tracks', {'ids': ','.join(track_ids)}, token).get('tracks', [])
+        ]
+        return {x.id: x for x in as_list}
+
     def search_playlists(self, query: str) -> List[Playlist]:
         playlists = (self.__get('/v1/search', {'q': query, 'type': 'playlist', 'limit': 50})
                      .get('playlists', {})
@@ -64,17 +82,7 @@ class Spotify:
         tracks = (self.__get('/v1/search', {'q': query, 'type': 'track', 'limit': 50})
                   .get('tracks', {})
                   .get('items', []))
-        return [
-            Track(
-                id=x['id'],
-                title=x['name'],
-                artists=[Artist(a['id'], a['name']) for a in x['artists']],
-                album=x['album']['name'],
-                image_url=sorted(x['album']['images'], key=lambda i: i['height'])[0]['url'],
-                preview_url=x['preview_url']
-            )
-            for x in tracks
-        ]
+        return [self.__to_track(x) for x in tracks]
 
     def get_playlist_tracks(self, playlist_id) -> List[Track]:
         initial_response = self.__get(f'/v1/playlists/{playlist_id}/tracks', {
@@ -164,17 +172,18 @@ class Spotify:
             },
             token
         )
-        return [
-            Track(
-                id=t['id'],
-                title=t['name'],
-                artists=[Artist(a['id'], a['name']) for a in t['artists']],
-                album=t['album']['name'],
-                image_url=next((t for t in sorted(t['album']['images'], key=lambda i: i['height'])), {}).get('url'),
-                preview_url=t['preview_url']
-            )
-            for t in response['tracks']
-        ]
+        return [self.__to_track(t) for t in response.get('tracks', [])]
+
+    @staticmethod
+    def __to_track(x: dict) -> Track:
+        return Track(
+            id=x['id'],
+            title=x['name'],
+            artists=[Artist(a['id'], a['name']) for a in x['artists']],
+            album=x['album']['name'],
+            image_url=sorted(x['album']['images'], key=lambda i: i['height'])[0]['url'],
+            preview_url=x['preview_url']
+        )
 
     @staticmethod
     def __get(path: str, params: dict, token: str = None) -> dict:
