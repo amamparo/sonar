@@ -1,10 +1,9 @@
 # TODO
 
 ## Must do before release
-* export playlist
+* if mobile device detected, display friendly "This site isn't optimized for mobile devices yet" message
 * think of a better name + logo/favicon
 * landing page w/ screenshots (with good SEO practices)
-* if mobile device detected, display friendly "This site isn't optimized for mobile devices yet" message
 
 ## Nice-to-haves
 * show a singleton toast notification when:

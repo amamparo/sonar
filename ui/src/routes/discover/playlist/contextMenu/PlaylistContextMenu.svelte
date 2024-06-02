@@ -7,6 +7,7 @@
 	import ImportPlaylistSubMenu from './ImportPlaylistSubMenu.svelte';
 	import AddSongsSubMenu from './addSongsSubMenu/AddSongsSubMenu.svelte';
 	import ConfirmClearModal from './ConfirmClearModal.svelte';
+	import ExportPlaylistModal from './ExportPlaylistModal.svelte';
 
 	export let subMenuToShow = null;
 
@@ -18,6 +19,11 @@
 	let isConfirmingClear = false;
 	const confirmClear = () => {
 		isConfirmingClear = true;
+	};
+
+	let isExportingPlaylist = false;
+	const exportPlaylist = () => {
+		isExportingPlaylist = true;
 	};
 </script>
 
@@ -35,19 +41,20 @@
 		{
 			icon: ExportIcon,
 			text: 'Export Playlist',
-			isDisabled: true,
-			action: () => console.log('Exporting playlist')
+			isDisabled: !hasTracks,
+			action: exportPlaylist
 		},
 		{
 			icon: TrashIcon,
 			text: 'Clear',
 			isDisabled: !hasTracks,
-			action: () => {
-				confirmClear()
-			}
+			action: confirmClear
 		}
 	]} />
 
 {#if isConfirmingClear}
-	<ConfirmClearModal on:close={() => isConfirmingClear = false}/>
+	<ConfirmClearModal on:close={() => isConfirmingClear = false} />
+{/if}
+{#if isExportingPlaylist}
+	<ExportPlaylistModal on:close={() => isExportingPlaylist = false} />
 {/if}

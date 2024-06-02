@@ -7,9 +7,7 @@ from flask import Flask, Response, jsonify, request, g
 from flask_cors import CORS
 from flask_injector import FlaskInjector
 from injector import inject
-from dacite import from_dict
 
-from src.models import Track
 from src.recommendations import RecommendationsService
 from src.spotify import Spotify
 from src.spotify_unauthorized import SpotifyUnauthorized
@@ -46,6 +44,14 @@ def __token_refresh(spotify: Spotify):
 @app.route('/tracks', methods=['POST'])
 def __tracks(spotify: Spotify):
     return jsonify(spotify.get_tracks(request.get_json()))
+
+
+@inject
+@app.route('/playlist', methods=['POST'])
+def __export_playlist(spotify: Spotify):
+    data = request.get_json()
+    spotify.export_playlist(data['name'], data['trackIds'])
+    return jsonify({})
 
 
 @inject

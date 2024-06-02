@@ -43,9 +43,13 @@
 			</div>
 		{:else if tracks.length === 0}
 			<div class="h-full flex items-center justify-center pb-20">
-				<Button onClick={show(AddSongsSubMenu)}>Add Tracks</Button>
+				<Button onClick={show(AddSongsSubMenu)} class="hover:border-primary hover:text-primary">
+					Add Tracks
+				</Button>
 				<span class="px-2">or</span>
-				<Button onClick={show(ImportPlaylistSubMenu)}>Import Playlist</Button>
+				<Button onClick={show(ImportPlaylistSubMenu)} class="hover:border-primary hover:text-primary">
+					Import Playlist
+				</Button>
 			</div>
 		{:else}
 			{#each tracks as track}

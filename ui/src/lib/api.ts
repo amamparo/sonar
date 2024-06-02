@@ -4,6 +4,13 @@ import tokenManager from '$lib/tokenManager';
 export const redirectUri = `${import.meta.env.VITE_SPOTIFY_REDIRECT_URI_BASE_URL}/login/callback`
 
 class Api {
+	async exportPlaylist(name: string, trackIds: string[]): Promise<void> {
+		await this.post('/playlist', {
+			name,
+			trackIds
+		})
+	}
+
 	async getTracks(trackIds: string[]): Promise<Track[]> {
 		const response = await this.post('/tracks', trackIds)
 		return response || []

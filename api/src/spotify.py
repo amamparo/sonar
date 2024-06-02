@@ -1,4 +1,5 @@
 import base64
+import json
 import urllib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from math import ceil, floor
@@ -46,6 +47,19 @@ class Spotify:
             }
         ).json()
 
+    def export_playlist(self, name: str, track_ids: List[str]) -> None:
+        user_id = self.__get('/v1/me')['id']
+        playlist_id = self.__post(f'/v1/users/{user_id}/playlists', data={
+            'name': name,
+            'public': False,
+            'description': 'Exported from Discoverify' # TODO: rename this app
+        })['id']
+        batches = [track_ids[i:i + 100] for i in range(0, len(track_ids), 100)]
+        for batch in batches:
+            self.__post(f'/v1/playlists/{playlist_id}/tracks', data={
+                'uris': [f'spotify:track:{x}' for x in batch]
+            })
+
     def get_tracks(self, track_ids: List[str]) -> List[Track]:
         batch_size = 50
         batches = [track_ids[i:i + batch_size] for i in range(0, len(track_ids), batch_size)]
@@ -60,7 +74,7 @@ class Spotify:
     def __get_tracks(self, track_ids: List[str], token: str) -> Dict[str, Track]:
         as_list = [
             self.__to_track(x) for x in
-            self.__get('/v1/tracks', {'ids': ','.join(track_ids)}, token).get('tracks', [])
+            self.__get('/v1/tracks', {'ids': ','.join(track_ids)}, token=token).get('tracks', [])
         ]
         return {x.id: x for x in as_list}
 
@@ -91,7 +105,7 @@ class Spotify:
         items = initial_response.get('items', [])
         next_url = initial_response.get('next')
         while next_url:
-            next_response = self.__get_full(next_url)
+            next_response = self.__request('GET', next_url)
             items += next_response.get('items', [])
             next_url = next_response.get('next')
         return [
@@ -111,7 +125,7 @@ class Spotify:
         result = {}
         token = self.__get_access_token()
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(self.__get_audio_features, batch, token) for batch in batches]
+            futures = [executor.submit(self.__get_audio_features, batch, token=token) for batch in batches]
             for future in as_completed(futures):
                 result.update(future.result())
         return result
@@ -150,7 +164,7 @@ class Spotify:
         token = self.__get_access_token()
         recommendation_scores: Dict[Track, int] = {}
         with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [executor.submit(self.__get_recommendations, batch, token) for batch in batches]
+            futures = [executor.submit(self.__get_recommendations, batch, token=token) for batch in batches]
             for future in as_completed(futures):
                 for i, recommendation in enumerate(future.result()):
                     recommendation_scores[recommendation] = recommendation_scores.get(recommendation, 0) + (100 - i)
@@ -186,22 +200,29 @@ class Spotify:
         )
 
     @staticmethod
-    def __get(path: str, params: dict, token: str = None) -> dict:
-        return Spotify.__get_full(f'https://api.spotify.com{path}?{parse.urlencode(params)}', token)
+    def __get(path: str, params: dict = None, token: str = None) -> dict:
+        return Spotify.__request('GET', f'https://api.spotify.com{path}?{parse.urlencode(params or {})}', token=token)
 
     @staticmethod
-    def __get_full(url: str, token: str = None) -> dict:
+    def __post(path: str, data: dict, token: str = None) -> dict:
+        return Spotify.__request('POST', f'https://api.spotify.com{path}', data=data, token=token)
+
+    @staticmethod
+    def __request(method: str, url: str, data: dict = None, token: str = None) -> dict:
         if not token:
             token = Spotify.__get_access_token()
-        response = requests.get(
+        response = requests.request(
+            method,
             url,
             headers={
-                'Authorization': f'Bearer {token}'
-            }
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json'
+            },
+            data=json.dumps(data) if data else None
         )
         if response.status_code == 404:
             return {}
-        if 400 <= response.status_code <= 403:
+        if 401 <= response.status_code <= 403:
             raise SpotifyUnauthorized(response.status_code, response.json())
         if response.status_code >= 500:
             raise Exception(response.text)

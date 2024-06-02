@@ -22,9 +22,6 @@
 		return tracks.some(track => track.id === id);
 	};
 
-	export let onComplete = () => {
-	};
-
 	const debouncedHandler = _.debounce(async (query) => {
 		const trimmed = query.trim().toLowerCase();
 		if (!trimmed) {
