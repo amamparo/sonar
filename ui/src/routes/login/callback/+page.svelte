@@ -5,7 +5,6 @@
 
 	onMount(async () => {
 		const params = new URLSearchParams(window.location.search)
-		console.log(">>> " + params)
 		const error = params.get('error')
 		if (error && error === 'access_denied') {
 			return goto('/');
