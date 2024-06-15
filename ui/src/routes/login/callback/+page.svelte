@@ -4,8 +4,14 @@
 	import tokenManager from '$lib/tokenManager.ts';
 
 	onMount(async () => {
-		const code = new URLSearchParams(window.location.search).get('code')
+		const params = new URLSearchParams(window.location.search)
+		console.log(">>> " + params)
+		const error = params.get('error')
+		if (error && error === 'access_denied') {
+			return goto('/');
+		}
+		const code = params.get('code')
 		await tokenManager.fetchRefreshToken(code)
-		goto('/discover');
+		return goto('/discover');
 	});
 </script>
