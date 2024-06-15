@@ -14,14 +14,14 @@
 		}
 
 		const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-		isMobile = /Mobi|Android|iPhone/i.test(userAgent);
+		isMobile = /Mobi|Android|iPhone|iPad/i.test(userAgent);
 	});
 </script>
 
 <body class="bg-background min-h-screen font-circular-medium">
 {#if isMobile}
 	<div class="text-white text-xl min-h-screen font-circular-medium flex items-center justify-center mx-8">
-		Sorry!  Sonar isn't available on mobile devices (yet). Please visit on a desktop or tablet.
+		Sorry! Sonar isn't available on mobile devices (yet). Please visit on a desktop.
 	</div>
 {:else}
 	<div class="max-w-screen-3xl mx-auto">
