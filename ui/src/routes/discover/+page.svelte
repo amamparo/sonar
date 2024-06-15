@@ -41,7 +41,7 @@
 				</div>
 			</div>
 			<footer class="mx-auto text-muted font-circular-book text-sm">
-				Copyright &copy; {new Date().getFullYear()} Discoverify
+				Copyright &copy; {new Date().getFullYear()} Sonar
 				&nbsp;|&nbsp;
 				Created by <a href="https://aaronmamparo.com" target="_blank">Aaron Mamparo</a>
 				&nbsp;|&nbsp;

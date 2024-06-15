@@ -2,10 +2,44 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+		<link rel="icon" href="https://sonar.aaronmamparo.com/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>Sonar</title>
+		<meta name="description" content="Create better Spotify playlists with Sonar">
+		<meta name="keywords" content="sonar,spotify,music,playlists,dj">
+		<meta name="author" content="Aaron Mamparo">
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="Sonar">
+		<meta property="og:description" content="Create better Spotify playlists with Sonar">
+		<meta property="og:image" content="https://sonar.aaronmamparo.com/screenshot.png">
+		<meta property="og:url" content="https://sonar.aaronmamparo.com">
+		<meta property="og:site_name" content="Sonar">
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="https://sonar.aaronmamparo.com/screenshot.png">
+		<meta name="twitter:title" content="Sonar">
+		<meta name="twitter:description" content="Create better Spotify playlists with Sonar">
+		<meta name="twitter:image" content="https://sonar.aaronmamparo.com/screenshot.png">
+
+		<!-- Canonical Link -->
+		<link rel="canonical" href="https://sonar.aaronmamparo.com">
+
 		%sveltekit.head%
 	</head>
+
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-8X7JV6TRMN"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-8X7JV6TRMN');
+	</script>
+
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
