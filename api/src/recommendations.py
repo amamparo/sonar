@@ -23,4 +23,4 @@ class RecommendationsService:
         if not seed_track_ids:
             return []
         shuffle(seed_track_ids)
-        return self.__spotify.get_recommendations(seed_track_ids[:500])[:100]
+        return self.__spotify.get_recommendations(seed_track_ids[:500])[:250]

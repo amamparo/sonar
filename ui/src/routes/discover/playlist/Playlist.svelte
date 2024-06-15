@@ -22,7 +22,7 @@
 	};
 </script>
 
-<Tile class="flex flex-col w-1/3">
+<Tile class="flex flex-col w-1/3 2xl:w-1/4">
 	<svelte:fragment slot="header">
 		<div>
 			Playlist

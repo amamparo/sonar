@@ -28,7 +28,7 @@
 	trackStore.subscribe(async ({ tracks }) => await fetchRecommendations(tracks));
 </script>
 
-<Tile class="w-2/3 px-0">
+<Tile class="w-2/3 2xl:w-3/4 px-0">
 	<div slot="header" class="px-2">
 		Recommendations
 	</div>

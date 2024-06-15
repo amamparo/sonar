@@ -2,8 +2,6 @@
 
 ## Must do before release
 * if mobile device detected, display friendly "This site isn't optimized for mobile devices yet" message
-* think of a better name + logo/favicon
-* landing page w/ screenshots (with good SEO practices)
 
 ## Nice-to-haves
 * show a singleton toast notification when:

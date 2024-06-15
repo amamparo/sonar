@@ -12,39 +12,44 @@
 		}
 	});
 </script>
-<div class="flex flex-col h-screen space-y-3 p-3">
-	<div class="w-full bg-midground text-primary p-2 flex justify-between items-center rounded">
-		<div class="text-lg pl-4 font-circular-bold">
-			Discoverify
+
+<body class="bg-background min-h-screen font-circular-medium">
+<div class="max-w-screen-3xl mx-auto">
+	<div class="flex flex-col h-screen space-y-3 p-3">
+		<div class="w-full bg-midground text-primary p-2 flex justify-between items-center rounded">
+			<div class="text-lg pl-4 font-circular-bold">
+				Sonar
+			</div>
+			<button class="w-8 h-8 p-2 fill-secondary hover:fill-red-600" title="Sign Out" on:click={() => goto('/logout')}>
+				<Logout />
+			</button>
 		</div>
-		<button class="w-8 h-8 p-2 fill-secondary hover:fill-red-600" on:click={() => goto('/logout')}>
-			<Logout />
-		</button>
-	</div>
-	<div class="flex-grow overflow-hidden flex">
-		<div class="space-x-3 w-full flex">
-			<Playlist />
-			<Recommendations />
+		<div class="flex-grow overflow-hidden flex">
+			<div class="space-x-3 w-full flex">
+				<Playlist />
+				<Recommendations />
+			</div>
 		</div>
+		<footer class="mx-auto text-muted font-circular-book text-sm">
+			Copyright &copy; {new Date().getFullYear()} Discoverify
+			&nbsp;|&nbsp;
+			Created by <a href="https://aaronmamparo.com" target="_blank">Aaron Mamparo</a>
+			&nbsp;|&nbsp;
+			<a href="mailto:aaronmamparo@gmail.com">Feedback?</a>
+		</footer>
 	</div>
-	<footer class="mx-auto text-muted font-circular-book text-sm">
-		Copyright &copy; {new Date().getFullYear()} Discoverify
-		&nbsp;|&nbsp;
-		Created by <a href="https://aaronmamparo.com" target="_blank">Aaron Mamparo</a>
-		&nbsp;|&nbsp;
-		<a href="mailto:aaronmamparo@gmail.com">Feedback?</a>
-	</footer>
 </div>
+</body>
 
 <style lang="scss">
-	footer {
-		a {
-			color: var(--text-secondary);
+  footer {
+    a {
+      color: var(--text-secondary);
 
-			&:hover {
-				color: var(--text-primary);
-				text-decoration: underline;
-			}
-		}
-	}
+      &:hover {
+        color: var(--text-primary);
+        text-decoration: underline;
+      }
+    }
+  }
 </style>
