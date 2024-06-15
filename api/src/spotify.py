@@ -52,7 +52,7 @@ class Spotify:
         playlist_id = self.__post(f'/v1/users/{user_id}/playlists', data={
             'name': name,
             'public': False,
-            'description': 'Exported from Discoverify' # TODO: rename this app
+            'description': 'Exported from Sonar'
         })['id']
         batches = [track_ids[i:i + 100] for i in range(0, len(track_ids), 100)]
         for batch in batches:

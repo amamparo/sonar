@@ -1,9 +1,4 @@
 # TODO
-
-## Must do before release
-* if mobile device detected, display friendly "This site isn't optimized for mobile devices yet" message
-
-## Nice-to-haves
 * show a singleton toast notification when:
   * track(s) added: "Added track to playlist" / "Added {n} tracks to playlist"
   * track(s) deleted: "Deleted track" / "Deleted all tracks"
